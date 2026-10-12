@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  WhisperOfSol — String resources (v3.0.0, 2026-10-09)
+
+  Naming convention: <screen>_<purpose> or <category>_<purpose>
+  Examples: action_copy, screen_title_inbox, error_connect_failed
+
+  Languages: en (default) / zh-Hans (简体中文) / zh-Hant (繁體中文) / ja (日本語)
+  All translations live in:
+    values-zh-rCN/strings.xml
+    values-zh-rTW/strings.xml
+    values-ja/strings.xml
+
+  Formatting:
+    - Use %1$s / %1$d / %1%.4f for positional args
+    - Technical terms (X25519, AES-GCM, PDA, Seed Vault, etc.) stay in English
+    - Brand names (Whisper of Sol, Seeker, Solana) do not translate
+    - Lottery tier names (Consolation, Small, Medium, Large, Mystery Jackpot) are
+      translated but English in parentheses is OK for tier_xxx_label
+-->
+<resources>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- App identity                                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="app_name">Whisper of Sol</string>
+    <string name="app_tagline">Send encrypted Christmas whispers on Solana</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Common actions (buttons, dialogs)                       -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_copied">Copied</string>
+    <string name="action_continue">Continue to Inbox</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_cancel_retry">Cancel &amp; retry</string>
+    <string name="action_refresh">Refresh</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Screen titles                                           -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="screen_title_main">Whisper of Sol</string>
+    <string name="screen_title_wallet">Whisper of Sol</string>
+    <string name="screen_title_send">Send Whisper</string>
+    <string name="screen_title_inbox">Inbox</string>
+    <string name="screen_title_rules">Lottery Rules</string>
+    <string name="screen_title_settings">Settings</string>
+    <string name="screen_title_whisper_sent">Whisper Sent</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Bottom nav / quick actions                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="nav_inbox">Inbox</string>
+    <string name="nav_rules">Rules</string>
+    <string name="nav_settings">Settings</string>
+    <string name="action_send_encrypted_whisper">Send Encrypted Whisper</string>
+    <string name="action_view_all">View all</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Wallet connect / status                                 -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="wallet_connect">Connect Wallet</string>
+    <string name="wallet_connected">Wallet Connected</string>
+    <string name="wallet_connecting">Connecting…</string>
+    <string name="wallet_not_connected">Not connected</string>
+    <string name="wallet_opening_seed_vault">Opening Seed Vault…</string>
+    <string name="wallet_balance_load_failed">Couldn\'t load balance</string>
+    <string name="wallet_balance_loading">Loading balance…</string>
+    <string name="wallet_address">Address</string>
+    <string name="wallet_your_address_title">Your Wallet Address</string>
+    <string name="wallet_qr_failed">Failed to generate QR code</string>
+    <string name="cd_show_qr">Show QR code</string>
+    <string name="cd_wallet_qr">Wallet address QR code</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Treasury / Jackpot chips                                -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="chip_treasury">Treasury</string>
+    <string name="chip_jackpot">Jackpot</string>
+    <string name="chip_loading">Loading…</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Whisper ID setup / register flow                        -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="setup_required_title">Setup required</string>
+    <string name="setup_required_desc">WhisperOfSol cannot send or decrypt messages until you complete setup. Other devices would not be able to find your Whisper ID on-chain.</string>
+    <string name="setup_generate_whisper_id">Generate Whisper ID</string>
+    <string name="setup_one_time_subtitle">One-time setup (~45s) — derives a deterministic X25519 keypair for cross-device recovery.</string>
+    <string name="setup_one_time_subtitle_blocked">One-time setup (~45s) - derives a deterministic X25519 keypair for cross-device recovery. App is blocked until setup succeeds.</string>
+    <string name="setup_login">Login</string>
+    <string name="setup_login_desc">On-chain Whisper ID found. Tap to log in without re-registering.</string>
+    <string name="setup_failed_title">Setup failed</string>
+    <string name="setup_retry">Retry setup</string>
+    <string name="setup_already_registered">Already registered</string>
+    <string name="setup_login_long_desc">Your on-chain Whisper ID was found for this wallet. Tap Login to enter without re-registering — no wallet signature, no GAS. (Note: previous messages encrypted to the old device\'s key can\'t be decrypted here.)</string>
+    <string name="setup_need_re_register">Need to re-register? The on-chain account key is owned by this wallet — re-setup would NOT change your PDA, but you\'d lose access to previous device\'s inbox.</string>
+    <string name="setup_set_up_whisper_id">Set up your Whisper ID</string>
+    <string name="setup_sign_and_register_desc">Sign a fixed string + register your encryption key on-chain. Two wallet approvals required (sign message + send transaction, ~0.000005 SOL fee).</string>
+    <string name="setup_approve_tx">Approve transaction in wallet…</string>
+    <string name="setup_approve_sign">Approve sign message in wallet…</string>
+    <string name="setup_set_up_cta">Set up Whisper ID</string>
+
+    <string name="register_on_chain">Register on-chain</string>
+    <string name="register_whisper_id_on_chain">Register Whisper ID on-chain</string>
+    <string name="register_local_only">Local only — not yet on-chain.</string>
+    <string name="register_local_only_long">Local only — not yet on-chain. Other devices can\'t find you.</string>
+    <string name="register_progress_approve">Approve the on-chain transaction…</string>
+    <string name="register_progress_confirming">Confirming the transaction in SMS Wallet…</string>
+    <string name="register_progress_waiting_land">Waiting for transaction to land on devnet…</string>
+    <string name="register_progress_almost">Almost there (tx confirmation)…</string>
+    <string name="register_progress_long">Tx is taking longer than usual…</string>
+    <string name="register_progress_connecting_wallet">Connecting to your wallet…</string>
+    <string name="register_progress_almost_done">Almost there, please wait…</string>
+    <string name="register_progress_too_long">This is taking longer than usual…</string>
+    <string name="register_progress_pin_prompt">Approve the on-chain transaction in SMS Wallet (may ask for PIN).</string>
+    <string name="register_progress_dialog_prompt">Approve the dialog in SMS Wallet to continue.</string>
+    <string name="register_elapsed_format">Elapsed: %1$ds</string>
+
+    <string name="whisper_id_label">Whisper ID</string>
+    <string name="whisper_id_failed">Whisper ID: failed</string>
+    <string name="whisper_id_share_desc">Share this so others can encrypt whispers to you.</string>
+    <string name="whisper_id_share_desc_old">Share this with senders so they can encrypt messages to you.</string>
+    <string name="whisper_id_copy_label">Copy Whisper ID</string>
+    <string name="whisper_id_share_title">Your Whisper ID</string>
+    <string name="whisper_id_clip_label">Whisper ID</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Send Whisper screen                                     -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="send_sealed">Your message is sealed</string>
+    <string name="send_sealed_subtitle">Only the recipient can read it.</string>
+    <string name="send_encrypted_end_to_end">Encrypted end-to-end</string>
+    <string name="send_recipient_label">Recipient Wallet Address</string>
+    <string name="send_recipient_hint">Solana wallet address (base58)</string>
+    <string name="send_secret_label">Secret Message</string>
+    <string name="send_secret_hint">Write your encrypted whisper here…</string>
+    <string name="send_fee_message">Message fee</string>
+    <string name="send_fee_gas">Gas estimate</string>
+    <string name="send_fee_storage">Storage rent</string>
+    <string name="send_encrypted_algo">Encrypted with X25519 + AES-GCM</string>
+    <string name="send_button_loading">Send Whisper (loading fees…)</string>
+    <string name="send_button_default">Send Whisper (0.01 SOL)</string>
+    <string name="send_progress_nonce_setup">Setting up durable nonce…</string>
+    <string name="send_progress_nonce_check">Checking nonce account…</string>
+    <string name="send_progress_sending">Sending…</string>
+    <string name="cd_scan_qr">Scan QR</string>
+
+    <string name="send_success_title">Whisper Sent</string>
+    <string name="send_success_subtitle">Your whisper is sealed on-chain</string>
+    <string name="send_success_share">Share the code below with the recipient.</string>
+    <string name="send_success_recipient_needs">Recipient needs these two values to unlock:</string>
+    <string name="send_share_sender_label">Sender address</string>
+    <string name="send_share_nonce_label">Nonce</string>
+    <string name="send_share_code_title">Whisper unlock code</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Inbox screen                                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="inbox_search_hint">Search senders or previews…</string>
+    <string name="inbox_empty_title">No whispers yet</string>
+    <string name="inbox_empty_desc">Your inbox is empty. Send one to get started!</string>
+    <string name="inbox_preview_unlocked">Already unlocked</string>
+    <string name="inbox_preview_locked">Tap to unlock · free (gas only)</string>
+    <string name="inbox_fullmessage_unlocked">Decrypted (V2: recipient secret required)</string>
+    <string name="inbox_fullmessage_locked">Tap Unlock to decrypt + claim reward on-chain.</string>
+    <string name="inbox_reward_claimed">Claimed</string>
+    <string name="inbox_reward_free">Free (gas only)</string>
+    <string name="inbox_recent_title">Recent Whispers</string>
+    <string name="inbox_recent_empty">No whispers yet — send one or share your QR to receive.</string>
+    <string name="inbox_recent_unlocked">Unlocked message</string>
+    <string name="inbox_recent_encrypted">Encrypted whisper</string>
+    <string name="inbox_unread_chip">Unread</string>
+    <string name="inbox_detail_title">From %1$s</string>
+    <string name="inbox_detail_content_unlocked">Whisper Content</string>
+    <string name="inbox_detail_content_locked">Encrypted Whisper</string>
+    <string name="inbox_unlock_explainer">This message is sealed with X25519 + AES-GCM.\n\nUnlocking is FREE — you only pay ~0.000005 SOL gas. If treasury ≥ 0.1 SOL, a random reward is also paid out. The content hash + ciphertext are stored in the Message PDA on-chain — your wallet\'s X25519 secret reveals it.</string>
+    <string name="inbox_unlock_button">Unlock (free, gas only)</string>
+    <string name="inbox_reward_won">Reward won:</string>
+    <string name="inbox_detail_network">Network</string>
+    <string name="inbox_detail_network_value">Solana Devnet</string>
+    <string name="inbox_detail_signature">Signature</string>
+    <string name="inbox_detail_slot">Slot</string>
+    <string name="inbox_detail_encrypted_key">Encrypted key</string>
+    <string name="inbox_unlock_by_nonce_explainer">The sender did not encrypt to your Whisper ID — either the sender skipped the optional \'Recipient Whisper ID\' field, or used a different wallet. The encrypted content is on-chain; you can verify the SHA-256 below against the sender\'s hash out-of-band.</string>
+    <string name="inbox_unlock_by_nonce_sender_hint">Sender\'s wallet address (base58)</string>
+    <string name="inbox_unlock_by_nonce_nonce_hint">Nonce (number from sender\'s success screen)</string>
+    <string name="inbox_unlock_by_nonce_button">Unlock Whisper</string>
+    <string name="inbox_ciphertext_label">Ciphertext (%1$d bytes)</string>
+    <string name="inbox_encrypted_key_label">Encrypted key (X25519 + AES-GCM, %1$d bytes)</string>
+    <string name="inbox_sha256_label">SHA-256 of plaintext</string>
+    <string name="inbox_reward_format">Reward: %1$s</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Rules / Lottery screen                                  -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="rules_hero_title">Christmas Lottery</string>
+    <string name="rules_hero_subtitle">Every unlock has a chance to win</string>
+    <string name="rules_subtitle">Probability table from chain</string>
+    <string name="rules_tier_consolation">Consolation</string>
+    <string name="rules_tier_small">Small</string>
+    <string name="rules_tier_medium">Medium</string>
+    <string name="rules_tier_large">Large</string>
+    <string name="rules_tier_mystery_jackpot">Mystery Jackpot</string>
+    <string name="rules_treasury_label">TREASURY BALANCE</string>
+    <string name="rules_treasury_loading">Loading…</string>
+    <string name="rules_treasury_live_from_chain">Live from on-chain Treasury PDA</string>
+    <string name="rules_treasury_view_explorer">View Treasury on Explorer</string>
+    <string name="rules_treasury_sol_format">%1$.4f SOL</string>
+
+    <!-- Christmas countdown component -->
+    <string name="countdown_merry_christmas">Merry Christmas!</string>
+    <string name="countdown_christmas_day">Christmas Day!</string>
+    <string name="countdown_seconds_format">%1$d seconds</string>
+    <string name="countdown_minutes_seconds_format">%1$d min %2$ds</string>
+    <string name="countdown_hours_minutes_format">%1$dh %2$dm</string>
+    <string name="countdown_almost_time">Almost time!</string>
+    <string name="countdown_final_hour">Final hour!</string>
+    <string name="countdown_almost_eve">Almost Christmas Eve</string>
+    <string name="countdown_until_christmas">Until 12/25 • Unlock 50% jackpot bonus</string>
+    <string name="countdown_its_today">It\'s 12/25 right now</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Settings (v3.0.0)                                       -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_language">Language</string>
+    <string name="settings_language_description">Choose the language for the app UI. Takes effect immediately.</string>
+    <string name="settings_language_system">System default</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_zh_hans">简体中文 (Simplified Chinese)</string>
+    <string name="settings_language_zh_hant">繁體中文 (Traditional Chinese)</string>
+    <string name="settings_language_ja">日本語 (Japanese)</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_version_format">Version %1$s (build %2$d)</string>
+    <string name="settings_program_id_label">Program ID</string>
+    <string name="settings_program_id_value">CCTfaFAHLPHQJrEcfKvvbeCKoEL2S5uFogev2DUo1kKw (Devnet)</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Errors (UiError messages)                               -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="error_connect_failed">Failed to connect wallet. Please try again.</string>
+    <string name="error_invalid_recipient">Invalid recipient wallet address.</string>
+    <string name="error_invalid_whisper_id">Invalid Whisper ID. Please re-register on-chain.</string>
+    <string name="error_send_failed">Failed to send whisper. Please try again.</string>
+    <string name="error_wallet_not_connected">Wallet not connected. Tap Connect first.</string>
+    <string name="error_transaction_build_failed">Failed to build transaction.</string>
+    <string name="error_invalid_nonce">Invalid nonce.</string>
+    <string name="error_nonce_setup_failed">Failed to set up nonce account.</string>
+    <string name="error_recipient_not_setup">Recipient hasn\'t set up their Whisper ID yet. Ask them to open WhisperOfSol and complete setup once.</string>
+    <string name="error_recipient_enc_pub_corrupted">Recipient\'s encryption key is corrupted. Ask them to re-register on-chain.</string>
+
+    <!-- Setup error messages -->
+    <string name="setup_error_dropped">Setup request dropped (internal buffer full). Tap Generate Whisper ID again.</string>
+    <string name="setup_error_dropped_short">Internal: setup request dropped. Tap Retry.</string>
+    <string name="setup_error_no_sign">Wallet did not sign the setup message. Tap Retry.</string>
+    <string name="setup_error_no_sign_long">Wallet did not sign the setup message.\n\nOn Seeker, this often means the wallet Flutter UI hangs when the Seed Vault prompt fires. Tap Retry, or reboot the Seeker if it keeps happening.</string>
+    <string name="setup_error_malformed">Signature was malformed (not 64 bytes). Tap Retry.</string>
+    <string name="setup_error_cancelled">Cancelled -- tap Generate Whisper ID to retry</string>
+    <string name="setup_error_cancelled_state">Setup cancelled. Tap Generate Whisper ID to retry.</string>
+    <string name="setup_error_malformed_state">Signature malformed. Tap Retry.</string>
+    <string name="setup_error_no_sign_state">Wallet did not sign. Tap Retry.</string>
+
+</resources>

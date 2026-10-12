@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    WhisperOfSol launcher icon — orange "Whisper" disk + 6-arm snowflake.
+
+    v1.9.1: replaced Christmas-themed (green + stocking + snowflake) with the
+    brand-on-device logo shown by BrandLogo.kt on in-app screens:
+        radial gradient Gold500 → Gold700 → Red700 (orange-to-red), with
+        a 6-arm radial snowflake in white at the center.
+
+    Adaptive icon vector. Viewport 108×108 matches Android adaptive icon spec
+    (the inner 72×72 is the safe zone; outer 108 is the full bleed).
+
+    Math: 6 arms at 0°, 60°, 120°, 180°, 240°, 300° from center (54,54).
+    cos/sin for radius 30:
+        0°  → (84.0, 54.0)     180° → (24.0, 54.0)
+        60° → (69.0, 80.0)     240° → (39.0, 28.0)
+        120°→ (39.0, 80.0)     300° → (69.0, 28.0)
+    (Y is downward in screen coords.)
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer ring: deep red (Red700 = #B91C1C) -->
+    <path
+        android:fillColor="#B91C1C"
+        android:pathData="M54,54 m-54,0 a54,54 0 1,0 108,0 a54,54 0 1,0 -108,0" />
+
+    <!-- Mid ring: deep orange (Gold700 = #B45309) -->
+    <path
+        android:fillColor="#B45309"
+        android:pathData="M54,54 m-46,0 a46,46 0 1,0 92,0 a46,46 0 1,0 -92,0" />
+
+    <!-- Inner disk: brand orange (Gold500 = #F59E0B) -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M54,54 m-38,0 a38,38 0 1,0 76,0 a38,38 0 1,0 -76,0" />
+
+    <!-- Highlight: bright gold (Gold300 = #FCD34D) — upper-left radial sheen -->
+    <path
+        android:fillColor="#FCD34D"
+        android:pathData="M40,40 m-12,0 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0" />
+
+    <!-- Snowflake — 6 radial arms (white) -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M54,54 L84,54 M54,54 L69,80 M54,54 L39,80 M54,54 L24,54 M54,54 L39,28 M54,54 L69,28" />
+
+    <!-- Snowflake tip barbs (12 small lines, matches SeedStyleIcon code) -->
+    <!-- Tip 0 (84,54) — barbs perpendicular to arm direction -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2.2" android:strokeLineCap="round"
+          android:fillColor="#00000000"
+          android:pathData="M78,48 L84,54 M78,60 L84,54" />
+    <!-- Tip 1 (69,80) — barbs perpendicular to 60° arm -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2.2" android:strokeLineCap="round"
+          android:fillColor="#00000000"
+          android:pathData="M63,82 L69,80 M73,72 L69,80" />
+    <!-- Tip 2 (39,80) — barbs perpendicular to 120° arm -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2.2" android:strokeLineCap="round"
+          android:fillColor="#00000000"
+          android:pathData="M35,72 L39,80 M45,82 L39,80" />
+    <!-- Tip 3 (24,54) — barbs perpendicular to 180° arm -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2.2" android:strokeLineCap="round"
+          android:fillColor="#00000000"
+          android:pathData="M30,48 L24,54 M30,60 L24,54" />
+    <!-- Tip 4 (39,28) — barbs perpendicular to 240° arm -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2.2" android:strokeLineCap="round"
+          android:fillColor="#00000000"
+          android:pathData="M35,36 L39,28 M45,26 L39,28" />
+    <!-- Tip 5 (69,28) — barbs perpendicular to 300° arm -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2.2" android:strokeLineCap="round"
+          android:fillColor="#00000000"
+          android:pathData="M63,26 L69,28 M73,36 L69,28" />
+
+    <!-- Center dot of snowflake -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,54 m-4.5,0 a4.5,4.5 0 1,0 9,0 a4.5,4.5 0 1,0 -9,0" />
+
+    <!-- Subtle gold halo ring (outer) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FCD34D"
+        android:strokeWidth="1.5"
+        android:pathData="M54,54 m-50,0 a50,50 0 1,0 100,0 a50,50 0 1,0 -100,0" />
+
+</vector>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+        Base application theme.
+        Compose handles all M3 styling via WhisperOfSolTheme; this base theme
+        exists only so the manifest has something to point at before Compose
+        takes over. Edge-to-edge enabled in MainActivity.onCreate.
+
+        v3.0.1: parent changed from android:Theme.Material.Light.NoActionBar
+        to Theme.AppCompat.DayNight.NoActionBar because MainActivity now
+        extends AppCompatActivity (for AppCompatDelegate.setApplicationLocales
+        to work). AppCompatActivity requires an AppCompat-compatible theme
+        parent at the XML level — otherwise the activity crashes on launch
+        with "You need to use a Theme.AppCompat theme (or descendant)".
+
+        We use Theme.AppCompat.DayNight (not MaterialComponents) because the
+        visual style is fully driven by Compose's MaterialTheme; the XML
+        theme just needs to be AppCompat-compatible to satisfy the
+        AppCompatActivity's onCreate() call.
+    -->
+    <style name="Theme.SolanaMobileApp" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    </style>
+</resources>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  WhisperOfSol — 文字列リソース (v3.0.0, 2026-10-09)
+
+  命名規則: <screen>_<purpose> または <category>_<purpose>
+  例: action_copy, screen_title_inbox, error_connect_failed
+
+  言語: en (デフォルト) / zh-Hans (簡体中国語) / zh-Hant (繁体中国語) / ja (日本語)
+  すべての翻訳は以下にあります:
+    values-zh-rCN/strings.xml
+    values-zh-rTW/strings.xml
+    values-ja/strings.xml
+
+  フォーマット:
+    - 位置引数は %1$s / %1$d / %1$.4f を使用
+    - 技術用語 (X25519, AES-GCM, PDA, Seed Vault など) は英語のまま
+    - ブランド名 (Whisper of Sol, Seeker, Solana) は翻訳しない
+    - 宝くじ tier 名 (Consolation, Small, Medium, Large, Mystery Jackpot) は翻訳可、
+      tier_xxx_label では括弧内に英語を併記してもOK
+-->
+<resources>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- アプリ識別                                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="app_name">Whisper of Sol</string>
+    <string name="app_tagline">Solana に暗号化されたクリスマスのささやきを届けよう</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 共通アクション (ボタン、ダイアログ)                    -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="action_back">戻る</string>
+    <string name="action_close">閉じる</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_retry">再試行</string>
+    <string name="action_copy">コピー</string>
+    <string name="action_copied">コピーしました</string>
+    <string name="action_continue">受信箱へ進む</string>
+    <string name="action_disconnect">接続を解除</string>
+    <string name="action_cancel_retry">キャンセルして再試行</string>
+    <string name="action_refresh">更新</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 画面タイトル                                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="screen_title_main">Whisper of Sol</string>
+    <string name="screen_title_wallet">Whisper of Sol</string>
+    <string name="screen_title_send">ウィスパーを送る</string>
+    <string name="screen_title_inbox">受信箱</string>
+    <string name="screen_title_rules">宝くじルール</string>
+    <string name="screen_title_settings">設定</string>
+    <string name="screen_title_whisper_sent">ウィスパー送信完了</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 下部ナビ / クイックアクション                          -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="nav_inbox">受信箱</string>
+    <string name="nav_rules">ルール</string>
+    <string name="nav_settings">設定</string>
+    <string name="action_send_encrypted_whisper">暗号化されたウィスパーを送る</string>
+    <string name="action_view_all">すべて表示</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ウォレット接続 / 状態                                  -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="wallet_connect">ウォレットを接続</string>
+    <string name="wallet_connected">ウォレット接続済み</string>
+    <string name="wallet_connecting">接続中…</string>
+    <string name="wallet_not_connected">未接続</string>
+    <string name="wallet_opening_seed_vault">Seed Vault を開いています…</string>
+    <string name="wallet_balance_load_failed">残高を読み込めませんでした</string>
+    <string name="wallet_balance_loading">残高を読み込み中…</string>
+    <string name="wallet_address">アドレス</string>
+    <string name="wallet_your_address_title">あなたのウォレットアドレス</string>
+    <string name="wallet_qr_failed">QR コードの生成に失敗しました</string>
+    <string name="cd_show_qr">QR コードを表示</string>
+    <string name="cd_wallet_qr">ウォレットアドレスの QR コード</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Treasury / Jackpot チップ                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="chip_treasury">Treasury</string>
+    <string name="chip_jackpot">ジャックポット</string>
+    <string name="chip_loading">読み込み中…</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Whisper ID セットアップ / 登録フロー                   -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="setup_required_title">セットアップが必要です</string>
+    <string name="setup_required_desc">セットアップを完了するまで、WhisperOfSol はメッセージの送受信や復号ができません。他のデバイスからあなたの Whisper ID をオンチェーンで検出することもできません。</string>
+    <string name="setup_generate_whisper_id">Whisper ID を生成</string>
+    <string name="setup_one_time_subtitle">初回セットアップ(約45秒)— 決定論的な X25519 鍵ペアを生成し、デバイス間で復元できるようにします。</string>
+    <string name="setup_one_time_subtitle_blocked">初回セットアップ(約45秒)— 決定論的な X25519 鍵ペアを生成し、デバイス間で復元できるようにします。セットアップが成功するまでアプリはブロックされます。</string>
+    <string name="setup_login">ログイン</string>
+    <string name="setup_login_desc">オンチェーンで Whisper ID が見つかりました。タップすれば再登録なしでログインできます。</string>
+    <string name="setup_failed_title">セットアップ失敗</string>
+    <string name="setup_retry">セットアップを再試行</string>
+    <string name="setup_already_registered">登録済み</string>
+    <string name="setup_login_long_desc">このウォレットでオンチェーンの Whisper ID が見つかりました。ログインをタップすれば再登録なしでアプリに入れます — ウォレットの署名も GAS も不要です。(注意: 以前のデバイスの鍵で暗号化されたメッセージは、ここでは復号できません。)</string>
+    <string name="setup_need_re_register">再登録が必要ですか? オンチェーンアカウントの鍵はこのウォレットが所有しているため、再セットアップしても PDA は変わりませんが、以前のデバイスの受信箱にアクセスできなくなります。</string>
+    <string name="setup_set_up_whisper_id">Whisper ID をセットアップ</string>
+    <string name="setup_sign_and_register_desc">固定文字列に署名し、暗号化鍵をオンチェーンに登録します。ウォレットの承認が 2 回必要です(メッセージ署名 + トランザクション送信、手数料は約0.000005 SOL)。</string>
+    <string name="setup_approve_tx">ウォレットでトランザクションを承認…</string>
+    <string name="setup_approve_sign">ウォレットでメッセージ署名を承認…</string>
+    <string name="setup_set_up_cta">Whisper ID をセットアップ</string>
+
+    <string name="register_on_chain">オンチェーンに登録</string>
+    <string name="register_whisper_id_on_chain">Whisper ID をオンチェーンに登録</string>
+    <string name="register_local_only">ローカルのみ — まだオンチェーンに登録されていません。</string>
+    <string name="register_local_only_long">ローカルのみ — まだオンチェーンに登録されていません。他のデバイスからあなたを見つけることはできません。</string>
+    <string name="register_progress_approve">オンチェーントランザクションを承認してください…</string>
+    <string name="register_progress_confirming">SMS Wallet でトランザクションを確認中…</string>
+    <string name="register_progress_waiting_land">トランザクションが devnet に着信するのを待機中…</string>
+    <string name="register_progress_almost">もうすぐです(トランザクション確認中)…</string>
+    <string name="register_progress_long">トランザクションが通常より時間がかかっています…</string>
+    <string name="register_progress_connecting_wallet">ウォレットに接続中…</string>
+    <string name="register_progress_almost_done">もうすぐです、しばらくお待ちください…</string>
+    <string name="register_progress_too_long">通常より時間がかかっています…</string>
+    <string name="register_progress_pin_prompt">SMS Wallet でオンチェーントランザクションを承認してください(PIN を求められる場合があります)。</string>
+    <string name="register_progress_dialog_prompt">SMS Wallet のダイアログを承認して続行してください。</string>
+    <string name="register_elapsed_format">経過 %1$d秒</string>
+
+    <string name="whisper_id_label">Whisper ID</string>
+    <string name="whisper_id_failed">Whisper ID: 失敗</string>
+    <string name="whisper_id_share_desc">共有すれば、他の人があなた宛にウィスパーを暗号化できます。</string>
+    <string name="whisper_id_share_desc_old">送信者と共有すれば、相手があなた宛にメッセージを暗号化できます。</string>
+    <string name="whisper_id_copy_label">Whisper ID をコピー</string>
+    <string name="whisper_id_share_title">あなたの Whisper ID</string>
+    <string name="whisper_id_clip_label">Whisper ID</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ウィスパー送信画面                                      -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="send_sealed">メッセージは封印されました</string>
+    <string name="send_sealed_subtitle">受信者だけが読むことができます。</string>
+    <string name="send_encrypted_end_to_end">エンドツーエンド暗号化</string>
+    <string name="send_recipient_label">受信者のウォレットアドレス</string>
+    <string name="send_recipient_hint">Solana ウォレットアドレス (base58)</string>
+    <string name="send_secret_label">秘密メッセージ</string>
+    <string name="send_secret_hint">暗号化するウィスパーをここに記入…</string>
+    <string name="send_fee_message">メッセージ手数料</string>
+    <string name="send_fee_gas">ガス代の見積もり</string>
+    <string name="send_fee_storage">ストレージレント</string>
+    <string name="send_encrypted_algo">X25519 + AES-GCM で暗号化</string>
+    <string name="send_button_loading">ウィスパーを送る(手数料を読み込み中…)</string>
+    <string name="send_button_default">ウィスパーを送る (0.01 SOL)</string>
+    <string name="send_progress_nonce_setup">durable nonce を設定中…</string>
+    <string name="send_progress_nonce_check">nonce アカウントを確認中…</string>
+    <string name="send_progress_sending">送信中…</string>
+    <string name="cd_scan_qr">QR をスキャン</string>
+
+    <string name="send_success_title">ウィスパー送信完了</string>
+    <string name="send_success_subtitle">ウィスパーはオンチェーンに封印されました</string>
+    <string name="send_success_share">下記のコードを受信者と共有してください。</string>
+    <string name="send_success_recipient_needs">受信者がアンロックするには次の 2 つの値が必要です:</string>
+    <string name="send_share_sender_label">送信者アドレス</string>
+    <string name="send_share_nonce_label">Nonce</string>
+    <string name="send_share_code_title">ウィスパーアンロックコード</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 受信箱画面                                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="inbox_search_hint">送信者やプレビューを検索…</string>
+    <string name="inbox_empty_title">まだウィスパーはありません</string>
+    <string name="inbox_empty_desc">受信箱は空です。最初の 1 通を送ってみましょう!</string>
+    <string name="inbox_preview_unlocked">アンロック済み</string>
+    <string name="inbox_preview_locked">タップでアンロック・無料(ガスのみ)</string>
+    <string name="inbox_fullmessage_unlocked">復号済み(V2: 受信者のシークレットが必要)</string>
+    <string name="inbox_fullmessage_locked">タップしてアンロックし、報酬をオンチェーンで受け取りましょう。</string>
+    <string name="inbox_reward_claimed">受取済み</string>
+    <string name="inbox_reward_free">無料(ガスのみ)</string>
+    <string name="inbox_recent_title">最近のウィスパー</string>
+    <string name="inbox_recent_empty">まだウィスパーはありません — 送る か、QR を共有して受信しましょう。</string>
+    <string name="inbox_recent_unlocked">アンロック済みメッセージ</string>
+    <string name="inbox_recent_encrypted">暗号化ウィスパー</string>
+    <string name="inbox_unread_chip">未読</string>
+    <string name="inbox_detail_title">%1$s から</string>
+    <string name="inbox_detail_content_unlocked">ウィスパー本文</string>
+    <string name="inbox_detail_content_locked">暗号化ウィスパー</string>
+    <string name="inbox_unlock_explainer">このメッセージは X25519 + AES-GCM で封印されています。\n\nアンロックは無料です — ガス代として約 0.000005 SOL のみ必要です。Treasury が 0.1 SOL 以上の場合、ランダムな報酬も支払われます。コンテンツハッシュと暗号文はオンチェーンの Message PDA に保存され、あなたのウォレットの X25519 シークレットで復号できます。</string>
+    <string name="inbox_unlock_button">アンロック(無料、ガスのみ)</string>
+    <string name="inbox_reward_won">獲得した報酬:</string>
+    <string name="inbox_detail_network">ネットワーク</string>
+    <string name="inbox_detail_network_value">Solana Devnet</string>
+    <string name="inbox_detail_signature">署名</string>
+    <string name="inbox_detail_slot">Slot</string>
+    <string name="inbox_detail_encrypted_key">暗号化鍵</string>
+    <string name="inbox_unlock_by_nonce_explainer">送信者があなたの Whisper ID 宛に暗号化していないようです — 送信者が任意の \'受信者 Whisper ID\' フィールドをスキップしたか、別のウォレットを使用した可能性があります。暗号化されたコンテンツはオンチェーンに保存されています。下記の SHA-256 は、送信者のハッシュと帯域外で照合できます。</string>
+    <string name="inbox_unlock_by_nonce_sender_hint">送信者のウォレットアドレス (base58)</string>
+    <string name="inbox_unlock_by_nonce_nonce_hint">Nonce (送信者の成功画面の番号)</string>
+    <string name="inbox_unlock_by_nonce_button">ウィスパーをアンロック</string>
+    <string name="inbox_ciphertext_label">暗号文 (%1$d バイト)</string>
+    <string name="inbox_encrypted_key_label">暗号化鍵 (X25519 + AES-GCM, %1$d バイト)</string>
+    <string name="inbox_sha256_label">平文の SHA-256</string>
+    <string name="inbox_reward_format">報酬: %1$s</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ルール / 宝くじ画面                                     -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="rules_hero_title">Christmas Lottery</string>
+    <string name="rules_hero_subtitle">アンロックするたびに当選のチャンス</string>
+    <string name="rules_subtitle">チェーンからの確率表</string>
+    <string name="rules_tier_consolation">consolation 賞(安慰賞)</string>
+    <string name="rules_tier_small">小賞</string>
+    <string name="rules_tier_medium">中賞</string>
+    <string name="rules_tier_large">大賞</string>
+    <string name="rules_tier_mystery_jackpot">ミステリージャックポット</string>
+    <string name="rules_treasury_label">Treasury 残高</string>
+    <string name="rules_treasury_loading">読み込み中…</string>
+    <string name="rules_treasury_live_from_chain">オンチェーンの Treasury PDA からリアルタイム</string>
+    <string name="rules_treasury_view_explorer">エクスプローラーで Treasury を見る</string>
+    <string name="rules_treasury_sol_format">%1$.4f SOL</string>
+
+    <!-- クリスマス カウントダウン コンポーネント -->
+    <string name="countdown_merry_christmas">メリークリスマス!</string>
+    <string name="countdown_christmas_day">クリスマス当日!</string>
+    <string name="countdown_seconds_format">%1$d秒</string>
+    <string name="countdown_minutes_seconds_format">%1$d分 %2$d秒</string>
+    <string name="countdown_hours_minutes_format">%1$d時間 %2$d分</string>
+    <string name="countdown_almost_time">もうすぐです!</string>
+    <string name="countdown_final_hour">残り1時間!</string>
+    <string name="countdown_almost_eve">もうすぐクリスマスイブ</string>
+    <string name="countdown_until_christmas">12/25 まで • アンロックでジャックポットボーナス50%増量</string>
+    <string name="countdown_its_today">いま 12/25 です</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 設定 (v3.0.0)                                           -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="settings_title">設定</string>
+    <string name="settings_section_language">言語</string>
+    <string name="settings_language_description">アプリの UI 言語を選択します。すぐに反映されます。</string>
+    <string name="settings_language_system">システムの言語</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_zh_hans">简体中文 (簡体中国語)</string>
+    <string name="settings_language_zh_hant">繁體中文 (繁体中国語)</string>
+    <string name="settings_language_ja">日本語 (Japanese)</string>
+    <string name="settings_section_about">アプリについて</string>
+    <string name="settings_version_format">バージョン %1$s (ビルド %2$d)</string>
+    <string name="settings_program_id_label">Program ID</string>
+    <string name="settings_program_id_value">CCTfaFAHLPHQJrEcfKvvbeCKoEL2S5uFogev2DUo1kKw (Devnet)</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- エラー (UiError メッセージ)                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="error_connect_failed">ウォレットの接続に失敗しました。もう一度お試しください。</string>
+    <string name="error_invalid_recipient">受信者のウォレットアドレスが無効です。</string>
+    <string name="error_invalid_whisper_id">Whisper ID が無効です。もう一度オンチェーンに登録してください。</string>
+    <string name="error_send_failed">ウィスパーの送信に失敗しました。もう一度お試しください。</string>
+    <string name="error_wallet_not_connected">ウォレットが接続されていません。接続ボタンをタップしてください。</string>
+    <string name="error_transaction_build_failed">トランザクションのビルドに失敗しました。</string>
+    <string name="error_invalid_nonce">Nonce が無効です。</string>
+    <string name="error_nonce_setup_failed">Nonce アカウントの設定に失敗しました。</string>
+    <string name="error_recipient_not_setup">受信者がまだ Whisper ID をセットアップしていません。WhisperOfSol を開いてセットアップを 1 回完了するよう伝えてください。</string>
+    <string name="error_recipient_enc_pub_corrupted">受信者の暗号化鍵が破損しています。もう一度オンチェーンに登録し直してもらってください。</string>
+
+    <!-- セットアップエラーメッセージ -->
+    <string name="setup_error_dropped">セットアップリクエストが破棄されました(内部バッファ満杯)。「Whisper ID を生成」をもう一度タップしてください。</string>
+    <string name="setup_error_dropped_short">内部エラー: セットアップリクエストが破棄されました。再試行をタップしてください。</string>
+    <string name="setup_error_no_sign">ウォレットがセットアップメッセージに署名しませんでした。再試行をタップしてください。</string>
+    <string name="setup_error_no_sign_long">ウォレットがセットアップメッセージに署名しませんでした。\n\nSeeker では、Seed Vault のプロンプトが表示されるとウォレットの Flutter UI がハングすることがよくあります。再試行をタップしてください。繰り返し発生する場合は Seeker を再起動してください。</string>
+    <string name="setup_error_malformed">署名が不正です(64 バイトではありません)。再試行をタップしてください。</string>
+    <string name="setup_error_cancelled">キャンセルされました — 「Whisper ID を生成」をタップして再試行してください</string>
+    <string name="setup_error_cancelled_state">セットアップがキャンセルされました。「Whisper ID を生成」をタップして再試行してください。</string>
+    <string name="setup_error_malformed_state">署名が不正です。再試行をタップしてください。</string>
+    <string name="setup_error_no_sign_state">ウォレットが署名しませんでした。再試行をタップしてください。</string>
+
+</resources>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 連網 (Solana RPC) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- v1.8.20: LOCAL_NETWORK for MWA — Android 14+ (API 34+) requires this
+         for dApp to reach Seed Vault's localhost WebSocket server (port chosen
+         by LocalAssociationScenario.start()). Without it, 127.0.0.1:{port}
+         dials ECONNREFUSED on Android 14+ devices (e.g. Seeker / API 37).
+         Scaffold worked because targetSdk=33 bypasses this restriction. -->
+    <uses-permission android:name="android.permission.LOCAL_NETWORK" />
+
+    <!-- QR scanner 需要相機 (Bug 2026-10-02 10:55 fix) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+    <!-- MWA: 查詢已安裝的 MWA-compat 錢包 (Android 11+ package visibility) -->
+    <queries>
+        <!-- Saga / Seeker 預裝 Seed Vault (官方) -->
+        <package android:name="com.solanamobile.wallet" />
+        <!-- Solflare wallet -->
+        <package android:name="com.solflare.mobile" />
+        <!-- Backpack wallet -->
+        <package android:name="app.backpack.mobile" />
+        <!-- Phantom wallet -->
+        <package android:name="com.phantom" />
+    </queries>
+
+    <application
+        android:name=".WhisperOfSolApp"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SolanaMobileApp">
+
+        <!-- MainActivity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:theme="@style/Theme.SolanaMobileApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- QrScannerActivity — launch with launchQrLauncher from SendWhisperScreen.
+             Returns scanned address string via setResult. No intent-filter
+             (only MainActivity can launch it internally — not exported). -->
+        <activity
+            android:name=".ui.screens.QrScannerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:theme="@style/Theme.SolanaMobileApp" />
+
+        <!-- v3.0.0 (2026-10-09): Per-app locale metadata.
+             AppLocalesMetadataHolderService is required for Android 13+ to
+             properly persist the AppCompatDelegate.setApplicationLocales()
+             choice across process restarts. Without it, the chosen locale
+             would be forgotten when the app is killed. -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
+    </application>
+
+</manifest>

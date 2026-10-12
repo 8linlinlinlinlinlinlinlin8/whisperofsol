@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  WhisperOfSol — 字串資源 (v3.0.0, 2026-10-09)
+
+  命名慣例: <screen>_<purpose> 或 <category>_<purpose>
+  範例: action_copy, screen_title_inbox, error_connect_failed
+
+  語言: en (預設) / zh-Hans (簡體中文) / zh-Hant (繁體中文) / ja (日本語)
+  所有翻譯位於:
+    values-zh-rCN/strings.xml
+    values-zh-rTW/strings.xml
+    values-ja/strings.xml
+
+  格式化:
+    - 使用 %1$s / %1$d / %1%.4f 表示位置參數
+    - 技術術語 (X25519, AES-GCM, PDA, Seed Vault 等) 保留英文
+    - 品牌名稱 (Whisper of Sol, Seeker, Solana) 不翻譯
+    - 抽獎 tier 名稱 (Consolation, Small, Medium, Large, Mystery Jackpot) 已翻譯,
+      tier_xxx_label 可保留英文括號以便對照
+-->
+<resources>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 應用程式識別                                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="app_name">Whisper of Sol</string>
+    <string name="app_tagline">在 Solana 上傳送加密的聖誕密語</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 通用操作 (按鈕、對話框)                                -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="action_back">返回</string>
+    <string name="action_close">關閉</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_retry">重試</string>
+    <string name="action_copy">複製</string>
+    <string name="action_copied">已複製</string>
+    <string name="action_continue">前往收件匣</string>
+    <string name="action_disconnect">中斷連線</string>
+    <string name="action_cancel_retry">取消並重試</string>
+    <string name="action_refresh">重新整理</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 頁面標題                                                -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="screen_title_main">Whisper of Sol</string>
+    <string name="screen_title_wallet">Whisper of Sol</string>
+    <string name="screen_title_send">傳送密語</string>
+    <string name="screen_title_inbox">收件匣</string>
+    <string name="screen_title_rules">抽獎規則</string>
+    <string name="screen_title_settings">設定</string>
+    <string name="screen_title_whisper_sent">密語已傳送</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 底部導覽 / 快捷操作                                     -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="nav_inbox">收件匣</string>
+    <string name="nav_rules">規則</string>
+    <string name="nav_settings">設定</string>
+    <string name="action_send_encrypted_whisper">傳送加密密語</string>
+    <string name="action_view_all">檢視全部</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 錢包連線 / 狀態                                         -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="wallet_connect">連線錢包</string>
+    <string name="wallet_connected">錢包已連線</string>
+    <string name="wallet_connecting">正在連線…</string>
+    <string name="wallet_not_connected">未連線</string>
+    <string name="wallet_opening_seed_vault">正在開啟 Seed Vault…</string>
+    <string name="wallet_balance_load_failed">無法載入餘額</string>
+    <string name="wallet_balance_loading">正在載入餘額…</string>
+    <string name="wallet_address">地址</string>
+    <string name="wallet_your_address_title">您的錢包地址</string>
+    <string name="wallet_qr_failed">產生 QR code 失敗</string>
+    <string name="cd_show_qr">顯示 QR code</string>
+    <string name="cd_wallet_qr">錢包地址 QR code</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Treasury / Jackpot 狀態條                               -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="chip_treasury">Treasury</string>
+    <string name="chip_jackpot">Jackpot</string>
+    <string name="chip_loading">載入中…</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Whisper ID 設定 / 註冊流程                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="setup_required_title">需要設定</string>
+    <string name="setup_required_desc">完成設定前,WhisperOfSol 無法傳送或解密訊息。其他裝置也無法在鏈上找到您的 Whisper ID。</string>
+    <string name="setup_generate_whisper_id">產生 Whisper ID</string>
+    <string name="setup_one_time_subtitle">一次性設定(約 45 秒) — 衍生出確定性的 X25519 金鑰對,支援跨裝置還原。</string>
+    <string name="setup_one_time_subtitle_blocked">一次性設定(約 45 秒) — 衍生出確定性的 X25519 金鑰對,支援跨裝置還原。設定完成前應用程式無法使用。</string>
+    <string name="setup_login">登入</string>
+    <string name="setup_login_desc">已在鏈上找到 Whisper ID。點擊登入,無需重複註冊。</string>
+    <string name="setup_failed_title">設定失敗</string>
+    <string name="setup_retry">重試設定</string>
+    <string name="setup_already_registered">已註冊</string>
+    <string name="setup_login_long_desc">已為該錢包找到鏈上的 Whisper ID。點擊登入即可進入,無需重新註冊 — 不需要錢包簽名,也沒有 GAS 消耗。(注意:先前加密給舊裝置的密語將無法在此解密。)</string>
+    <string name="setup_need_re_register">需要重新註冊嗎?鏈上帳戶金鑰歸本錢包所有 — 重新設定不會改變您的 PDA,但您會失去存取舊裝置收件匣的權限。</string>
+    <string name="setup_set_up_whisper_id">設定您的 Whisper ID</string>
+    <string name="setup_sign_and_register_desc">簽署一段固定字串並在鏈上註冊您的加密金鑰。需要兩次錢包授權(簽名訊息 + 傳送交易,約 0.000005 SOL 手續費)。</string>
+    <string name="setup_approve_tx">請在錢包中核准交易…</string>
+    <string name="setup_approve_sign">請在錢包中核准訊息簽名…</string>
+    <string name="setup_set_up_cta">設定 Whisper ID</string>
+
+    <string name="register_on_chain">鏈上註冊</string>
+    <string name="register_whisper_id_on_chain">在鏈上註冊 Whisper ID</string>
+    <string name="register_local_only">僅本地,尚未上鏈。</string>
+    <string name="register_local_only_long">僅本地,尚未上鏈。其他裝置無法找到您。</string>
+    <string name="register_progress_approve">請核准鏈上交易…</string>
+    <string name="register_progress_confirming">正在 SMS Wallet 中確認交易…</string>
+    <string name="register_progress_waiting_land">等待交易在 devnet 上鏈…</string>
+    <string name="register_progress_almost">即將完成(等待交易確認)…</string>
+    <string name="register_progress_long">交易確認時間比平時更長…</string>
+    <string name="register_progress_connecting_wallet">正在連線您的錢包…</string>
+    <string name="register_progress_almost_done">即將完成,請稍候…</string>
+    <string name="register_progress_too_long">耗時比平時更長…</string>
+    <string name="register_progress_pin_prompt">請在 SMS Wallet 中核准鏈上交易(可能需要輸入 PIN)。</string>
+    <string name="register_progress_dialog_prompt">請在 SMS Wallet 中核准對話框以繼續。</string>
+    <string name="register_elapsed_format">已耗時: %1$d 秒</string>
+
+    <string name="whisper_id_label">Whisper ID</string>
+    <string name="whisper_id_failed">Whisper ID:失敗</string>
+    <string name="whisper_id_share_desc">分享給別人,他們就能向您傳送加密密語。</string>
+    <string name="whisper_id_share_desc_old">分享給寄件者,他們就能向您傳送加密訊息。</string>
+    <string name="whisper_id_copy_label">複製 Whisper ID</string>
+    <string name="whisper_id_share_title">您的 Whisper ID</string>
+    <string name="whisper_id_clip_label">Whisper ID</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 傳送密語頁面                                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="send_sealed">您的訊息已被封存</string>
+    <string name="send_sealed_subtitle">只有收件人可以閱讀。</string>
+    <string name="send_encrypted_end_to_end">端對端加密</string>
+    <string name="send_recipient_label">收件人錢包地址</string>
+    <string name="send_recipient_hint">Solana 錢包地址 (base58)</string>
+    <string name="send_secret_label">密語內容</string>
+    <string name="send_secret_hint">在這裡寫下您的加密密語…</string>
+    <string name="send_fee_message">訊息費用</string>
+    <string name="send_fee_gas">Gas 估算</string>
+    <string name="send_fee_storage">儲存租金</string>
+    <string name="send_encrypted_algo">使用 X25519 + AES-GCM 加密</string>
+    <string name="send_button_loading">傳送密語(正在載入費用…)</string>
+    <string name="send_button_default">傳送密語(0.01 SOL)</string>
+    <string name="send_progress_nonce_setup">正在設定 durable nonce…</string>
+    <string name="send_progress_nonce_check">正在檢查 nonce 帳戶…</string>
+    <string name="send_progress_sending">傳送中…</string>
+    <string name="cd_scan_qr">掃描 QR code</string>
+
+    <string name="send_success_title">密語已傳送</string>
+    <string name="send_success_subtitle">您的密語已封存上鏈</string>
+    <string name="send_success_share">請將以下代碼分享給收件人。</string>
+    <string name="send_success_recipient_needs">收件人需要以下兩個值才能解鎖:</string>
+    <string name="send_share_sender_label">寄件者地址</string>
+    <string name="send_share_nonce_label">Nonce</string>
+    <string name="send_share_code_title">密語解鎖碼</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 收件匣頁面                                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="inbox_search_hint">搜尋寄件者或預覽…</string>
+    <string name="inbox_empty_title">還沒有密語</string>
+    <string name="inbox_empty_desc">收件匣是空的。傳送一條開始體驗吧!</string>
+    <string name="inbox_preview_unlocked">已解鎖</string>
+    <string name="inbox_preview_locked">點擊解鎖 · 免費(僅 Gas)</string>
+    <string name="inbox_fullmessage_unlocked">已解密(V2:需要收件人金鑰)</string>
+    <string name="inbox_fullmessage_locked">點擊解鎖以解密並在鏈上領取獎勵。</string>
+    <string name="inbox_reward_claimed">已領取</string>
+    <string name="inbox_reward_free">免費(僅 Gas)</string>
+    <string name="inbox_recent_title">最近密語</string>
+    <string name="inbox_recent_empty">還沒有密語 — 傳送一條,或分享您的 QR code 以接收。</string>
+    <string name="inbox_recent_unlocked">已解鎖的訊息</string>
+    <string name="inbox_recent_encrypted">加密的密語</string>
+    <string name="inbox_unread_chip">未讀</string>
+    <string name="inbox_detail_title">來自 %1$s</string>
+    <string name="inbox_detail_content_unlocked">密語內容</string>
+    <string name="inbox_detail_content_locked">加密的密語</string>
+    <string name="inbox_unlock_explainer">本訊息使用 X25519 + AES-GCM 加密封存。\n\n解鎖完全免費 — 您只需支付約 0.000005 SOL 的 gas 費。如果 Treasury ≥ 0.1 SOL,還會隨機派發獎勵。內容雜湊與密文存於鏈上 Message PDA — 用您錢包的 X25519 私密金鑰即可解出明文。</string>
+    <string name="inbox_unlock_button">解鎖(免費,僅 Gas)</string>
+    <string name="inbox_reward_won">獲得獎勵:</string>
+    <string name="inbox_detail_network">網路</string>
+    <string name="inbox_detail_network_value">Solana Devnet</string>
+    <string name="inbox_detail_signature">簽名</string>
+    <string name="inbox_detail_slot">Slot</string>
+    <string name="inbox_detail_encrypted_key">加密金鑰</string>
+    <string name="inbox_unlock_by_nonce_explainer">寄件者未用您的 Whisper ID 加密 — 要麼是寄件者跳過了選填的「收件人 Whisper ID」欄位,要麼是用了別的錢包。加密內容已上鏈;您可以將下方的 SHA-256 與寄件者提供的雜湊離線核對。</string>
+    <string name="inbox_unlock_by_nonce_sender_hint">寄件者的錢包地址 (base58)</string>
+    <string name="inbox_unlock_by_nonce_nonce_hint">Nonce(寄件者成功頁上的數字)</string>
+    <string name="inbox_unlock_by_nonce_button">解鎖密語</string>
+    <string name="inbox_ciphertext_label">密文(%1$d 位元組)</string>
+    <string name="inbox_encrypted_key_label">加密金鑰(X25519 + AES-GCM,%1$d 位元組)</string>
+    <string name="inbox_sha256_label">明文 SHA-256</string>
+    <string name="inbox_reward_format">獎勵: %1$s</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 規則 / 抽獎頁面                                        -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="rules_hero_title">Christmas Lottery</string>
+    <string name="rules_hero_subtitle">每次解鎖都有機會中獎</string>
+    <string name="rules_subtitle">來自鏈上的機率表</string>
+    <string name="rules_tier_consolation">安慰獎 (Consolation)</string>
+    <string name="rules_tier_small">小獎 (Small)</string>
+    <string name="rules_tier_medium">中獎 (Medium)</string>
+    <string name="rules_tier_large">大獎 (Large)</string>
+    <string name="rules_tier_mystery_jackpot">神秘大獎 (Mystery Jackpot)</string>
+    <string name="rules_treasury_label">TREASURY 餘額</string>
+    <string name="rules_treasury_loading">載入中…</string>
+    <string name="rules_treasury_live_from_chain">來自鏈上 Treasury PDA 的即時資料</string>
+    <string name="rules_treasury_view_explorer">在 Explorer 上檢視 Treasury</string>
+    <string name="rules_treasury_sol_format">%1$.4f SOL</string>
+
+    <!-- 聖誕倒數元件 -->
+    <string name="countdown_merry_christmas">聖誕快樂!</string>
+    <string name="countdown_christmas_day">聖誕節到了!</string>
+    <string name="countdown_seconds_format">%1$d 秒</string>
+    <string name="countdown_minutes_seconds_format">%1$d 分 %2$d 秒</string>
+    <string name="countdown_hours_minutes_format">%1$d 小時 %2$d 分</string>
+    <string name="countdown_almost_time">就要到了!</string>
+    <string name="countdown_final_hour">最後一小時!</string>
+    <string name="countdown_almost_eve">臨近聖誕前夜</string>
+    <string name="countdown_until_christmas">距離 12/25 • 解鎖可享 50% jackpot 獎勵加成</string>
+    <string name="countdown_its_today">現在是 12/25</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 設定 (v3.0.0)                                          -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="settings_title">設定</string>
+    <string name="settings_section_language">語言</string>
+    <string name="settings_language_description">選擇應用程式 UI 的語言。設定立即生效。</string>
+    <string name="settings_language_system">使用系統語言</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_zh_hans">簡體中文 (Simplified Chinese)</string>
+    <string name="settings_language_zh_hant">繁體中文 (Traditional Chinese)</string>
+    <string name="settings_language_ja">日本語 (Japanese)</string>
+    <string name="settings_section_about">關於</string>
+    <string name="settings_version_format">版本 %1$s (建置 %2$d)</string>
+    <string name="settings_program_id_label">Program ID</string>
+    <string name="settings_program_id_value">CCTfaFAHLPHQJrEcfKvvbeCKoEL2S5uFogev2DUo1kKw (Devnet)</string>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- 錯誤 (UiError 訊息)                                    -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <string name="error_connect_failed">連線錢包失敗,請重試。</string>
+    <string name="error_invalid_recipient">收件人錢包地址無效。</string>
+    <string name="error_invalid_whisper_id">Whisper ID 無效,請重新在鏈上註冊。</string>
+    <string name="error_send_failed">傳送密語失敗,請重試。</string>
+    <string name="error_wallet_not_connected">錢包未連線,請先點擊連線。</string>
+    <string name="error_transaction_build_failed">建置交易失敗。</string>
+    <string name="error_invalid_nonce">Nonce 無效。</string>
+    <string name="error_nonce_setup_failed">設定 nonce 帳戶失敗。</string>
+    <string name="error_recipient_not_setup">收件人尚未設定 Whisper ID,請讓他們開啟 WhisperOfSol 完成一次設定。</string>
+    <string name="error_recipient_enc_pub_corrupted">收件人的加密金鑰已損壞,請讓他們重新在鏈上註冊。</string>
+
+    <!-- 設定錯誤訊息 -->
+    <string name="setup_error_dropped">設定請求被捨棄(內部緩衝區已滿)。請重新點擊「產生 Whisper ID」。</string>
+    <string name="setup_error_dropped_short">內部錯誤:設定請求被捨棄。請點擊重試。</string>
+    <string name="setup_error_no_sign">錢包未簽署設定訊息。請點擊重試。</string>
+    <string name="setup_error_no_sign_long">錢包未簽署設定訊息。\n\n在 Seeker 上,這通常意味著 Seed Vault 對話框觸發時錢包的 Flutter UI 卡住了。請點擊重試;如果反覆出現,請重新啟動 Seeker。</string>
+    <string name="setup_error_malformed">簽名格式錯誤(不是 64 位元組)。請點擊重試。</string>
+    <string name="setup_error_cancelled">已取消 — 點擊「產生 Whisper ID」重試</string>
+    <string name="setup_error_cancelled_state">設定已取消。點擊「產生 Whisper ID」重試。</string>
+    <string name="setup_error_malformed_state">簽名格式錯誤。請點擊重試。</string>
+    <string name="setup_error_no_sign_state">錢包未簽署。請點擊重試。</string>
+
+</resources>

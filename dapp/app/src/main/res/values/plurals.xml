@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Stage 1.5: i18n-friendly day counting. Replaces the
+        `$n day(s)` hack with proper plural strings so translations can
+        follow the locale's plural rules (some languages have 4+ plural
+        forms — en has only 2).
+    -->
+    <plurals name="days_until_christmas">
+        <item quantity="one">%d day until 12/25</item>
+        <item quantity="other">%d days until 12/25</item>
+    </plurals>
+    <plurals name="days_since_christmas">
+        <item quantity="one">%d day since 12/25</item>
+        <item quantity="other">%d days since 12/25</item>
+    </plurals>
+    <plurals name="countdown_main">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+</resources>
