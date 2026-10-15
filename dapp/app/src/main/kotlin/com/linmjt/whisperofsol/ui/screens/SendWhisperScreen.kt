@@ -213,7 +213,8 @@ fun SendWhisperScreen(
             }
 
             // ─── Hero illustration ───────────────────────────────────
-            // v3.0.16: cyberpunk glass — translucent surface + gold glow border + Shield vector icon (no emoji).
+            // v3.0.17: cyberpunk double-frame border (1.0dp gold outer + 0.5dp gold 60% inner, 2dp gap).
+            // v3.0.17: typography — titleSmall (14sp SemiBold) + bodySmall (12sp).
             // Text 不變: "Your message is sealed" / "Only the recipient can read it."
             Box(
                 modifier = Modifier
@@ -229,9 +230,15 @@ fun SendWhisperScreen(
                         shape = RoundedCornerShape(20.dp),
                     )
                     .border(
-                        width = 1.2.dp,
-                        color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.85f),
+                        width = 1.0.dp,
+                        color = MaterialTheme.colorScheme.tertiary,
                         shape = RoundedCornerShape(20.dp),
+                    )
+                    .padding(2.dp)
+                    .border(
+                        width = 0.5.dp,
+                        color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.55f),
+                        shape = RoundedCornerShape(18.dp),
                     )
                     .padding(16.dp),
             ) {
@@ -249,13 +256,13 @@ fun SendWhisperScreen(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "Your message is sealed",
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
                             text = "Only the recipient can read it.",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
