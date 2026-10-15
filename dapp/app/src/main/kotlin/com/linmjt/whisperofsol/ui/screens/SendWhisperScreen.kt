@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -51,6 +52,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -96,7 +99,7 @@ import com.linmjt.whisperofsol.ui.uiErrorMessage
  *   6. Treasury status chip (Stage 1.5: replaces raw "Failed to fetch treasury: null")
  *   7. Send / Cancel buttons (Stage 1.5: disabled unless treasury is Loaded)
  */
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun SendWhisperScreen(
     uiState: com.linmjt.whisperofsol.ui.viewmodel.HomeUiState,
@@ -305,23 +308,49 @@ fun SendWhisperScreen(
             // by their wallet address. Manual input was user-hostile
             // (forced Telegram / SMS Whisper ID share).
 
-            // v3.0.7: Address book quick-pick — show up to 3 most recent
-            // saved addresses as FilterChips. Tap a chip to autofill the
-            // recipient field. Hidden when the book is empty.
+            // v3.0.8: Address book quick-pick + Manage chip.
+            // - Quick-pick chips show up to 3 most recent entries (Recent sort).
+            // - "Manage" chip opens the full [AddressBookSheet] (search + sort + add).
+            // - Hidden entirely when the book is empty — the empty AddressBook
+            //   sheet will surface the empty state with a CTA to add.
             var bookEntries by remember { mutableStateOf(AddressBookPrefs.getAll(context)) }
-            var showSaveDialog by remember { mutableStateOf(false) }
+            var showAddressBook by remember { mutableStateOf(false) }
+            val sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
             LaunchedEffect(Unit) { bookEntries = AddressBookPrefs.getAll(context) }
+            // Refresh the quick-pick when the sheet closes (user may have added/removed entries).
+            LaunchedEffect(showAddressBook) {
+                if (!showAddressBook) bookEntries = AddressBookPrefs.getAll(context)
+            }
             if (bookEntries.isNotEmpty()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(
-                        text = stringResource(R.string.addressbook_quick_pick_label),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    androidx.compose.foundation.layout.FlowRow(
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.addressbook_quick_pick_label),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        TextButton(
+                            onClick = { showAddressBook = true },
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.addressbook_manage_chip),
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        }
+                    }
+                    // v3.0.8: horizontal scrolling row of quick-pick chips
+                    // (3 max — FlowRow's API signature is unstable across
+                    // Compose versions, so use plain Row + horizontalScroll).
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         bookEntries.take(3).forEach { entry ->
                             FilterChip(
@@ -333,52 +362,77 @@ fun SendWhisperScreen(
                         }
                     }
                 }
+            } else {
+                // Empty book — surface a single "Add address" link instead of nothing.
+                TextButton(
+                    onClick = { showAddressBook = true },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Filled.Book,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(R.string.addressbook_add_first_cta))
+                }
             }
 
-            // v3.0.7: Save-to-address-book button. Only shows when the
-            // user has typed a non-blank address that isn't already in
-            // the book. One tap to save (default nickname empty).
-            if (recipient.isNotBlank() && !AddressBookPrefs.contains(context, recipient)) {
-                SecondaryButton(
-                    text = stringResource(R.string.addressbook_save_button),
-                    onClick = { showSaveDialog = true },
-                    modifier = Modifier.fillMaxWidth(),
+            if (showAddressBook) {
+                com.linmjt.whisperofsol.ui.components.AddressBookSheet(
+                    sheetState = sheetState,
+                    onDismiss = { showAddressBook = false },
+                    onSelect = { entry ->
+                        recipient = entry.address
+                        showAddressBook = false
+                    },
                 )
             }
 
-            if (showSaveDialog) {
-                androidx.compose.material3.AlertDialog(
-                    onDismissRequest = { showSaveDialog = false },
-                    title = { Text(stringResource(R.string.addressbook_save_dialog_title)) },
-                    text = {
-                        var nick by remember { mutableStateOf("") }
-                        androidx.compose.material3.OutlinedTextField(
-                            value = nick,
-                            onValueChange = { if (it.length <= 40) nick = it },
-                            label = { Text(stringResource(R.string.addressbook_nickname_label)) },
-                            placeholder = { Text(stringResource(R.string.addressbook_nickname_hint)) },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+            // v3.0.8: Post-send prompt — fires when a send completes and the
+            // recipient isn't in the book yet. Triggered by lastSentNonce
+            // transitioning from null → non-null. Reset by clearLastSent
+            // (next send or back navigation).
+            var postSendRecipient by remember { mutableStateOf<String?>(null) }
+            // v3.0.8 (debug only): allow forcing the post-send dialog via
+            // Intent extra so the test on a Seeker device that can't MWA-
+            // connect can still exercise this flow.
+            //   adb shell am start ... --es debug.app.force_postsend <address>
+            LaunchedEffect(Unit) {
+                if (com.linmjt.whisperofsol.BuildConfig.DEBUG) {
+                    val forced = (context as? android.app.Activity)
+                        ?.intent?.getStringExtra("debug.app.force_postsend")
+                    if (!forced.isNullOrBlank()
+                        && !AddressBookPrefs.contains(context, forced)
+                        && !AddressBookPrefs.isPostSendPromptDisabled(context)
+                    ) {
+                        postSendRecipient = forced
+                    }
+                }
+            }
+            LaunchedEffect(uiState.lastSentNonce) {
+                if (uiState.lastSentNonce != null) {
+                    val r = uiState.lastSentRecipient
+                    if (!r.isNullOrBlank()
+                        && !AddressBookPrefs.contains(context, r)
+                        && !AddressBookPrefs.isPostSendPromptDisabled(context)
+                    ) {
+                        postSendRecipient = r
+                    }
+                }
+            }
+            postSendRecipient?.let { addr ->
+                com.linmjt.whisperofsol.ui.components.PostSendDialog(
+                    recipientAddress = addr,
+                    onDismiss = {
+                        // "Not now" — no save, just close the dialog.
+                        postSendRecipient = null
                     },
-                    confirmButton = {
-                        androidx.compose.material3.TextButton(onClick = {
-                            AddressBookPrefs.add(context, recipient, "")
-                            bookEntries = AddressBookPrefs.getAll(context)
-                            showSaveDialog = false
-                            android.widget.Toast.makeText(
-                                context,
-                                context.getString(R.string.addressbook_added),
-                                android.widget.Toast.LENGTH_SHORT,
-                            ).show()
-                        }) {
-                            Text(stringResource(R.string.addressbook_save_action))
-                        }
-                    },
-                    dismissButton = {
-                        androidx.compose.material3.TextButton(onClick = { showSaveDialog = false }) {
-                            Text(stringResource(R.string.addressbook_cancel))
-                        }
+                    onSave = { nickname ->
+                        // "Save" — write to prefs (empty nickname ok; user can
+                        // rename later from the Manage sheet).
+                        AddressBookPrefs.add(context, addr, nickname)
+                        postSendRecipient = null
                     },
                 )
             }

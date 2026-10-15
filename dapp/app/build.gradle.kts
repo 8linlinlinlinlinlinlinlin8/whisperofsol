@@ -12,7 +12,10 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 105
+        versionCode = 106
+        // v3.0.8: AddressBook inline sheet (search + sort), post-send
+        //   prompt with opt-out checkbox, QR scan in AddAddressDialog,
+        //   useCount/lastUsedAt tracking, exchange-style row design.
         // v1.9.0: Clean devnet reset, full SOP validation.
         //   old: Dv1UzYXq... (v1.8.33, closed 2026-10-08 via SOP Step 1)
         //   old treasury: DAmnstxv... (was)
@@ -45,7 +48,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.7"
+        versionName = "3.0.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

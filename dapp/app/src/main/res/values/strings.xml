@@ -308,9 +308,36 @@
 
     <string name="addressbook_address_label">Address</string>
 
+    <!-- Address book sheet (v3.0.8) — primary inline management UI -->
+    <string name="addressbook_sheet_title">Address Book</string>
+    <string name="addressbook_sheet_subtitle">Save addresses you message often</string>
+    <string name="addressbook_close">Close</string>
+    <string name="addressbook_search_hint">Search nickname or address</string>
+    <string name="addressbook_sort_recent">Recent</string>
+    <string name="addressbook_sort_az">A–Z</string>
+    <string name="addressbook_sort_frequent">Frequent</string>
+    <string name="addressbook_use_count">%1$d× used</string>
+    <string name="addressbook_more">More</string>
+    <string name="addressbook_rename">Rename</string>
+    <string name="addressbook_rename_title">Rename address</string>
+    <string name="addressbook_deleted_message">Address removed</string>
+    <string name="addressbook_undo">Undo</string>
+    <string name="addressbook_add_new">Add new</string>
+    <string name="addressbook_add_first_cta">＋ Add an address to your book</string>
+    <string name="addressbook_add_dialog_title">Add to address book</string>
+    <string name="addressbook_manage_chip">Manage ▾</string>
+    <string name="addressbook_empty">No saved addresses yet. Tap + to add.</string>
+    <string name="addressbook_empty_search">No addresses match your search.</string>
+    <string name="addressbook_empty_add_cta">Add an address</string>
+    <string name="addressbook_address_hint">Solana wallet address (base58)</string>
+    <string name="addressbook_qr_button">Scan</string>
 
-<!-- Address book (v3.0.7) -->
+    <!-- Post-send prompt (v3.0.8) — fires after a successful send if the recipient isn't in the book -->
+    <string name="postsend_title">Send to a friend again later?</string>
+    <string name="postsend_body">Save this address to your Address Book for quick re-sending.</string>
+    <string name="postsend_dont_ask">Don\'t ask me again</string>
+    <string name="postsend_not_now">Not now</string>
+    <string name="postsend_save">Save</string>
 
-    
 
 </resources>

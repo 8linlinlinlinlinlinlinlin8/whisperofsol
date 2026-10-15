@@ -308,5 +308,36 @@
 
     <string name="addressbook_address_label">Address</string>
 
+    <!-- 地址簿 sheet (v3.0.8) — 主要內嵌管理介面 -->
+    <string name="addressbook_sheet_title">地址簿</string>
+    <string name="addressbook_sheet_subtitle">儲存你常傳訊的地址</string>
+    <string name="addressbook_close">關閉</string>
+    <string name="addressbook_search_hint">搜尋名稱或地址</string>
+    <string name="addressbook_sort_recent">最近用</string>
+    <string name="addressbook_sort_az">A–Z</string>
+    <string name="addressbook_sort_frequent">最常用</string>
+    <string name="addressbook_use_count">用過 %1$d 次</string>
+    <string name="addressbook_more">更多</string>
+    <string name="addressbook_rename">重新命名</string>
+    <string name="addressbook_rename_title">重新命名地址</string>
+    <string name="addressbook_deleted_message">已刪除地址</string>
+    <string name="addressbook_undo">復原</string>
+    <string name="addressbook_add_new">新增</string>
+    <string name="addressbook_add_first_cta">＋ 新增地址到地址簿</string>
+    <string name="addressbook_add_dialog_title">新增到地址簿</string>
+    <string name="addressbook_manage_chip">管理 ▾</string>
+    <string name="addressbook_empty">尚未儲存任何地址。點 + 新增。</string>
+    <string name="addressbook_empty_search">找不到符合的地址。</string>
+    <string name="addressbook_empty_add_cta">新增地址</string>
+    <string name="addressbook_address_hint">Solana 錢包地址 (base58)</string>
+    <string name="addressbook_qr_button">掃描</string>
+
+    <!-- 發送後詢問 (v3.0.8) — 成功發送但地址不在簿中時彈出 -->
+    <string name="postsend_title">下次想再傳給這個朋友嗎？</string>
+    <string name="postsend_body">把這個地址加到你的地址簿,下次傳訊更快速。</string>
+    <string name="postsend_dont_ask">不要再詢問我</string>
+    <string name="postsend_not_now">下次說</string>
+    <string name="postsend_save">儲存</string>
+
 
 </resources>

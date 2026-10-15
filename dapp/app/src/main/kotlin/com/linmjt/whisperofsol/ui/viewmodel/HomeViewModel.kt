@@ -1663,6 +1663,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             lastTxSignature = null,
             lastSentNonce = null,
             lastSentSender = null,
+            lastSentRecipient = null,  // v3.0.8
             pendingNonce = null,
             pendingRecipient = null,
             error = null,
@@ -1700,12 +1701,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         // state is cleared.
                         lastSentNonce = _uiState.value.pendingNonce,
                         lastSentSender = senderBase58,
+                        // v3.0.8: remember the recipient so the post-send
+                        // "save address?" dialog can show + record use.
+                        lastSentRecipient = _uiState.value.pendingRecipient,
                         error = null,
                         pendingNonce = null,
                         pendingRecipient = null,
                         sendRetryAttempt = 0,
                         lastSendRetryError = null,
                     )
+                    // v3.0.8: bump useCount + lastUsedAt for the recipient
+                    // so "Frequent" / "Recent" sort orders reflect this send.
+                    _uiState.value.lastSentRecipient?.let { addr ->
+                        com.linmjt.whisperofsol.ui.AddressBookPrefs.recordUse(getApplication(), addr)
+                    }
                     clearRetryState()
                     // Refresh treasury + inbox
                     refreshTreasury()
@@ -2145,6 +2154,11 @@ data class HomeUiState(
     /** Sender's own pubkey base58 for the last sent message (so the
      *  recipient can call unlockWhisper with sender + nonce). */
     val lastSentSender: String? = null,
+    /** v3.0.8: recipient of the last successfully sent message. Kept
+     *  after onSignAndSendResult so the post-send "save address?" dialog
+     *  can show the address the user just sent to. Cleared on
+     *  [HomeViewModel.clearLastSent] (next send or back navigation). */
+    val lastSentRecipient: String? = null,
     /** Pending send nonce (for diagnostics) */
     val pendingNonce: Long? = null,
     /** Pending recipient base58 (for diagnostics) */
