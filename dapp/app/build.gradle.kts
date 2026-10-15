@@ -12,7 +12,16 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 108
+        versionCode = 109
+        // v3.0.10: Post-send dialog tap-through bug. The Material 3
+        //   AlertDialog has `dismissOnClickOutside = true` by default, so
+        //   a tap on the scrim dismissed the dialog AND the same tap
+        //   passed through to the underlying screen, triggering whatever
+        //   button happened to be at that screen position (e.g. the Send
+        //   button on the Inbox page). Switched the dialog to a custom
+        //   `Dialog` with `dismissOnClickOutside = false` and a manual
+        //   scrim-blocking Box. User must explicitly tap a button to
+        //   close the dialog.
         // v3.0.9: Post-send prompt was invisible (dialog logic lived in
         //   SendWhisperScreen but that screen returns early when
         //   SendCompletePanel shows, so the dialog state was set but never
@@ -53,7 +62,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.9"
+        versionName = "3.0.10"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
