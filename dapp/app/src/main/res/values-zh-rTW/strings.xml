@@ -252,6 +252,7 @@
     <string name="error_nonce_setup_failed">設定 nonce 帳戶失敗。</string>
     <string name="error_recipient_not_setup">收件人尚未設定 Whisper ID,請讓他們開啟 WhisperOfSol 完成一次設定。</string>
     <string name="error_recipient_enc_pub_corrupted">收件人的加密金鑰已損壞,請讓他們重新在鏈上註冊。</string>
+    <string name="error_recipient_inbox_full">收件人的收件匣已滿 (8 則未讀訊息),請讓他們先解鎖至少一則訊息,你才能再寄。</string>
 
     <!-- 設定錯誤訊息 -->
     <string name="setup_error_dropped">設定請求被捨棄(內部緩衝區已滿)。請重新點擊「產生 Whisper ID」。</string>

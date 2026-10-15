@@ -252,6 +252,7 @@
     <string name="error_nonce_setup_failed">Nonce アカウントの設定に失敗しました。</string>
     <string name="error_recipient_not_setup">受信者がまだ Whisper ID をセットアップしていません。WhisperOfSol を開いてセットアップを 1 回完了するよう伝えてください。</string>
     <string name="error_recipient_enc_pub_corrupted">受信者の暗号化鍵が破損しています。もう一度オンチェーンに登録し直してもらってください。</string>
+    <string name="error_recipient_inbox_full">受信者の受信箱がいっぱいです (未読 8 件)。少なくとも 1 件のメッセージをアンロックしてもらってから、再度送信してください。</string>
 
     <!-- セットアップエラーメッセージ -->
     <string name="setup_error_dropped">セットアップリクエストが破棄されました(内部バッファ満杯)。「Whisper ID を生成」をもう一度タップしてください。</string>

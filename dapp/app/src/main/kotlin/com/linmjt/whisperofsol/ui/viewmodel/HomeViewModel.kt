@@ -1540,6 +1540,22 @@ class HomeViewModel(
                     return@launch
                 }
 
+                // v1.9.3: pre-flight inbox-full check. One extra RPC, but it
+                // saves the user from signing a tx that the chain will reject.
+                // If the recipient's inbox already has 8 unclaimed messages,
+                // we abort HERE with a clear UI error instead of going to MWA.
+                // null = check failed (RPC error) → fail-open, let the chain
+                // handle it (still better than the v1.9.2 silent fail).
+                val inboxSpace = whisperService.checkRecipientInboxSpace(recipientKey)
+                if (inboxSpace != null && !inboxSpace.hasSpace) {
+                    WsolLog.e("sendWhisper: REFUSED — recipient inbox FULL (${inboxSpace.unclaimedCount}/8 unclaimed) for ${recipientAddress.take(12)}...")
+                    _uiState.value = _uiState.value.copy(
+                        isSending = false,
+                        error = UiError.RecipientInboxFull,
+                    )
+                    return@launch
+                }
+
                 // v1.9.6: ALWAYS do fresh on-chain lookup at send time.
                 // 1 RPC call per Send (no per-keystroke spam).
                 val finalEncPub: ByteArray? = lookupRecipientEncPubSync(recipientAddress)
@@ -2186,6 +2202,11 @@ sealed class UiError {
     // (or re-register) before a Whisper can be delivered.
     object RecipientNotSetup : UiError()
     object RecipientEncPubCorrupted : UiError()
+    // v1.9.3: pre-flight inbox-full check refuses the send before MWA so the
+    // user gets a clear UI error instead of a "transaction failed" wall from
+    // the wallet. The chain would reject the same send with InboxFull; we just
+    // catch it 1 RPC earlier.
+    object RecipientInboxFull : UiError()
 }
 
 /**

@@ -12,7 +12,19 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 113
+        versionCode = 114
+        // v3.0.15: pre-flight inbox-full check.
+        //   - WhisperService.checkRecipientInboxSpace() reads the recipient's
+        //     Inbox PDA (1 RPC) and counts unclaimed slots. If all 8 are
+        //     unclaimed, sendWhisper aborts with UiError.RecipientInboxFull
+        //     BEFORE invoking MWA, so the user sees a clear UI error instead
+        //     of signing a tx that the chain would reject with InboxFull.
+        //   - On RPC error, fail-open (return null → caller proceeds; the
+        //     chain's own InboxFull check is the safety net).
+        //   - No new error class for the wallet side: the same InboxFull
+        //     program error still exists; we just intercept the common case
+        //     earlier for better UX.
+        // v3.0.14: log hygiene + crypto-self-test cleanup.
         // v3.0.14: log hygiene + crypto-self-test cleanup.
         //   - 48 ad-hoc `WSOL_DEBUG` Log.e calls in HomeViewModel +
         //     WhisperIdRepository + MainScreen now routed through new
@@ -96,7 +108,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.14"
+        versionName = "3.0.15"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

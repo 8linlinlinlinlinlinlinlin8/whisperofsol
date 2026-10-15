@@ -33,4 +33,5 @@ fun uiErrorMessage(error: UiError): String = when (error) {
     UiError.NonceSetupFailed          -> stringResource(R.string.error_nonce_setup_failed)
     UiError.RecipientNotSetup         -> stringResource(R.string.error_recipient_not_setup)
     UiError.RecipientEncPubCorrupted  -> stringResource(R.string.error_recipient_enc_pub_corrupted)
+    UiError.RecipientInboxFull        -> stringResource(R.string.error_recipient_inbox_full)
 }

@@ -891,6 +891,77 @@ class WhisperService(private val rpc: SolanaRpcService = SolanaRpcService()) {
         return sb.toString()
     }
 
+    /**
+     * v1.9.3: Pre-flight inbox-space check for the recipient of an outgoing
+     * send. Returns a snapshot of how many unclaimed slots the recipient
+     * currently has in their Inbox PDA, or `null` if the check itself
+     * failed (RPC timeout, malformed data, etc.).
+     *
+     * Returns `null` ONLY for genuine error paths — NOT for "inbox doesn't
+     * exist on chain yet" (that returns `InboxSpace(unclaimedCount = 0,
+     * hasSpace = true)` since a brand-new inbox trivially has room).
+     *
+     * Caller contract: when this returns non-null and `hasSpace == false`,
+     * the send MUST be aborted before going to MWA. When this returns
+     * null, the caller should fail-open (let the chain reject) rather than
+     * block legitimate sends on a transient RPC hiccup.
+     *
+     * The check is O(1) (one getAccountInfo RPC, scan 8 fixed slots). It
+     * mirrors the on-chain `send_message` inbox check in lib.rs:
+     *
+     *     if msg_count >= INBOX_MAX_MESSAGES {
+     *         // need at least one claimed slot to evict
+     *         for i in 0..INBOX_MAX_MESSAGES {
+     *             if inbox.messages[i].claimed { ... overwrite ... }
+     *         }
+     *         require!(evict_idx.is_some(), InboxFull);
+     *     }
+     *
+     * If all 8 slots are unclaimed, the program would reject the tx — we
+     * catch it here so the user gets a clear UI error instead of a "tx
+     * failed" wall from the wallet.
+     */
+    suspend fun checkRecipientInboxSpace(recipientPubkey: ByteArray): InboxSpace? {
+        return try {
+            val inboxPda = findInboxPda(recipientPubkey)
+            val accountInfo = rpc.getAccountInfo(inboxPda.toString())
+            if (accountInfo == null) {
+                // Inbox PDA doesn't exist yet (recipient has never received
+                // a whisper). Brand-new inbox = 0/8 unclaimed = has space.
+                return InboxSpace(unclaimedCount = 0, hasSpace = true)
+            }
+            val dataArray = accountInfo.optJSONArray("data")
+            if (dataArray == null) {
+                Logger.w(TAG, "checkRecipientInboxSpace: accountInfo has no 'data' array — fail-open")
+                return InboxSpace(unclaimedCount = 0, hasSpace = true)
+            }
+            if (dataArray.length() < 1) {
+                return InboxSpace(unclaimedCount = 0, hasSpace = true)
+            }
+            val dataBase64 = dataArray.optString(0, "")
+            if (dataBase64.isEmpty()) {
+                return InboxSpace(unclaimedCount = 0, hasSpace = true)
+            }
+            val data = Base64.decode(dataBase64, Base64.NO_WRAP)
+            // Layout: 8 disc + 392 messages (8×49) + 32 owner + 4 len + 1 bump + 3 _pad
+            // Need at least 8 + 49 to even check the first slot.
+            if (data.size < 8 + 49) {
+                return InboxSpace(unclaimedCount = 0, hasSpace = true)
+            }
+            var unclaimed = 0
+            for (i in 0 until 8) {
+                val msgOff = 8 + i * 49
+                if (msgOff + 49 > data.size) break
+                val claimed = data[msgOff + 48].toInt() != 0
+                if (!claimed) unclaimed++
+            }
+            InboxSpace(unclaimedCount = unclaimed, hasSpace = unclaimed < 8)
+        } catch (e: Exception) {
+            Logger.e(TAG, "checkRecipientInboxSpace: RPC error — fail-open", e)
+            null
+        }
+    }
+
     companion object {
         private const val TAG = "WhisperService"
 
@@ -916,6 +987,20 @@ data class InboxMessageRef(
     val nonce: Long,
     val createdAt: Long,
     val claimed: Boolean,
+)
+
+/**
+ * v1.9.3: Result of a pre-flight inbox-space check on a recipient.
+ *
+ * @property unclaimedCount How many of the 8 inbox slots are unclaimed
+ *   (i.e. unread) for the recipient. 0..8 inclusive.
+ * @property hasSpace True if a new message could be delivered without
+ *   triggering the on-chain InboxFull error. Equivalent to
+ *   `unclaimedCount < 8`.
+ */
+data class InboxSpace(
+    val unclaimedCount: Int,
+    val hasSpace: Boolean,
 )
 
 /**

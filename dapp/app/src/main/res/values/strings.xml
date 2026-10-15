@@ -252,6 +252,7 @@
     <string name="error_nonce_setup_failed">Failed to set up nonce account.</string>
     <string name="error_recipient_not_setup">Recipient hasn\'t set up their Whisper ID yet. Ask them to open WhisperOfSol and complete setup once.</string>
     <string name="error_recipient_enc_pub_corrupted">Recipient\'s encryption key is corrupted. Ask them to re-register on-chain.</string>
+    <string name="error_recipient_inbox_full">Recipient\'s inbox is full (8 unread messages). Ask them to unlock at least one message before you can send another.</string>
 
     <!-- Setup error messages -->
     <string name="setup_error_dropped">Setup request dropped (internal buffer full). Tap Generate Whisper ID again.</string>
