@@ -12,7 +12,13 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 111
+        versionCode = 112
+        // v3.0.13: Login now re-derives enc_priv from the on-chain WhisperId
+        //   PDA signature (v1.6.1+ flow), so fresh installs + Login (no
+        //   wallet re-prompt) can decrypt old messages. Previously Login
+        //   was view-only: enc_priv = 32 zero bytes, decrypt always failed
+        //   with AEADBadTag. See HomeViewModel.loginWithoutPrivKey + the
+        //   new findWhisperIdByWallet on WhisperIdRepository.
         // v3.0.12: Tapping "Not now" or "Save" on the post-send dialog
         //   was kicking the user back to the empty send form (user
         //   feedback 2026-10-13). The dialog callbacks were calling
@@ -76,7 +82,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.12"
+        versionName = "3.0.13"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

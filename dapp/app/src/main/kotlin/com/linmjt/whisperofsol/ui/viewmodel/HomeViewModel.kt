@@ -347,26 +347,28 @@ class HomeViewModel(
         // we only want the chain check (no sign prompt). The caller should
         // use [refreshSetupStateFromChain] instead in that case.
         val walletBase58 = com.solana.mobilewalletadapter.common.util.Base58.encode(_uiState.value.publicKey!!)
-        val onChainEncPub: ByteArray? = try {
-            withContext(Dispatchers.IO) { whisperIdRepo.findEncPubByWallet(walletBase58) }
+        val onChainWhisperId: com.linmjt.whisperofsol.data.WhisperIdRecord? = try {
+            withContext(Dispatchers.IO) { whisperIdRepo.findWhisperIdByWallet(walletBase58) }
         } catch (e: Throwable) {
             Logger.w(TAG, "ensureWhisperKey: on-chain PDA lookup failed -- assume not registered: ${e.message}")
             null
         }
+        val onChainEncPub = onChainWhisperId?.encPub
         if (onChainEncPub != null && onChainEncPub.size == 32) {
             // PDA exists on chain for THIS wallet — user is already registered.
             // Set ReadyToLogin state. User can then tap "Login" to proceed
-            // without re-registering. If they need to decrypt old messages
-            // they'll have to re-setup (which will be a NEW registration that
-            // overwrites — but our program keeps the existing PDA, so old
-            // senders can still reach this wallet's old PDA if they knew the
-            // old WhisperKey).
+            // without re-registering. v1.9.2: also carry the on-chain signature
+            // so loginWithoutPrivKey can re-derive the local X25519 secret
+            // (no wallet prompt) and decrypt old messages.
             Logger.i(TAG, "ensureWhisperKey: on-chain PDA found for ${walletBase58.take(8)}.. -- ReadyToLogin (no GAS)")
             val base64 = android.util.Base64.encodeToString(onChainEncPub, android.util.Base64.NO_WRAP)
+            val sigBase64: String? = onChainWhisperId.signature
+                ?.takeIf { it.size == 64 }
+                ?.let { android.util.Base64.encodeToString(it, android.util.Base64.NO_WRAP) }
             _uiState.value = _uiState.value.copy(
                 whisperKeyInitialized = true,
                 isSigningWhisperKey = false,
-                setupState = SetupState.ReadyToLogin(base64),
+                setupState = SetupState.ReadyToLogin(base64, sigBase64),
                 whisperKeyError = null,
             )
             return
@@ -411,16 +413,25 @@ class HomeViewModel(
     }
 
     /**
-     * v1.9.1: Login using on-chain registered identity, without re-signing.
+     * v1.9.2: Login using on-chain registered identity, recovering the local
+     * X25519 secret from the on-chain signature (no wallet re-prompt).
      *
      * Use case: user is registered on-chain (PDA exists) but local cache is
-     * empty (fresh install, cleared data, device transfer). Tapping "Login"
-     * on the Setup screen enters home using a "view-only" WhisperKey built
-     * from the on-chain enc_pub. Trade-off: old inbox messages encrypted
-     * to the missing privkey can't be decrypted on this device, but new
-     * messages still work (others encrypt to the on-chain enc_pub).
+     * empty (fresh install, cleared data, device transfer). The wallet
+     * signature over the canonical "WhisperOfSol encryption key v1 |
+     * <wallet_pubkey>" message was stored in the WhisperId PDA at original
+     * Set up Whisper ID time (v1.6.1+). We re-derive the X25519 secret from
+     * that signature — the result is identical to what Setup produced,
+     * because Ed25519 signatures are deterministic (RFC 8032 §5.1.6) and the
+     * signing message is fixed.
      *
-     * NO wallet signature requested. NO on-chain tx. NO GAS.
+     * Result: a full WhisperKey with the real enc_priv, not a view-only stub.
+     * Decrypt works for old messages, no wallet re-prompt, no on-chain tx,
+     * no GAS.
+     *
+     * Fallback: if the on-chain PDA has no signature (pre-v1.6.1 legacy data),
+     * fall back to v1.9.1 view-only mode so the user can at least send new
+     * messages. UI should ideally warn the user that decrypt won't work.
      */
     fun loginWithoutPrivKey() {
         val s = _uiState.value.setupState
@@ -433,22 +444,68 @@ class HomeViewModel(
             Logger.e(TAG, "loginWithoutPrivKey: on-chain enc_pub wrong size ${encPub.size}")
             return
         }
-        // Build a "view-only" WhisperKey: real enc_pub, zero xs.
-        // WhisperCrypto will use xs for decrypt (fails on old messages), but
-        // xs is NOT used for encrypt-to-others (uses recipient's enc_pub from
-        // their PDA at send-message time). New messages work fine.
-        val viewOnlyKey = com.linmjt.whisperofsol.crypto.WhisperKey(
-            xs = ByteArray(32),  // dummy — won't decrypt
-            xp = encPub,
-        )
-        Logger.i(TAG, "loginWithoutPrivKey: entering home with view-only WhisperKey (no GAS)")
+        val signature: ByteArray? = s.onChainSignatureBase64
+            ?.let { android.util.Base64.decode(it, android.util.Base64.NO_WRAP) }
+        val recovered: com.linmjt.whisperofsol.crypto.WhisperKey = if (signature != null && signature.size == 64) {
+            // v1.9.2: re-derive the X25519 secret from the on-chain signature.
+            // Same algorithm as WhisperKeyStore.deriveAndCache — SHA-512(sig)[:32]
+            // then RFC 7748 §5 clamping. The result matches what Setup produced
+            // (deterministic Ed25519 + fixed signing message), so decrypt works
+            // for any message encrypted to the on-chain enc_pub.
+            val hash = java.security.MessageDigest.getInstance("SHA-512").digest(signature)
+            val xs = ByteArray(32)
+            System.arraycopy(hash, 0, xs, 0, 32)
+            xs[0] = (xs[0].toInt() and 0xf8).toByte()
+            xs[31] = (xs[31].toInt() and 0x7f).toByte()
+            xs[31] = (xs[31].toInt() or 0x40).toByte()
+            val derivedXp = com.google.crypto.tink.subtle.X25519.publicFromPrivate(xs)
+            // Sanity: derived enc_pub must equal the on-chain enc_pub.
+            // If not, the wallet's signature isn't deterministic (or the
+            // signing message changed across versions) — fall back to view-only.
+            if (!derivedXp.contentEquals(encPub)) {
+                Logger.e(TAG, "loginWithoutPrivKey: DERIVED enc_pub != on-chain enc_pub (signature is non-deterministic or signing message changed); falling back to view-only")
+                android.util.Log.e("WSOL_DEBUG", "loginWithoutPrivKey RECOVERY_MISMATCH: derived=${android.util.Base64.encodeToString(derivedXp, android.util.Base64.NO_WRAP).take(16)}… onchain=${s.onChainEncPubBase64.take(16)}…")
+                viewOnlyWhisperKey(encPub)
+            } else {
+                Logger.i(TAG, "loginWithoutPrivKey: RECOVERED full enc_priv from on-chain signature (no wallet prompt needed)")
+                android.util.Log.e("WSOL_DEBUG", "loginWithoutPrivKey RECOVERED: enc_priv=${xs.joinToString("") { "%02x".format(it) }}")
+                com.linmjt.whisperofsol.crypto.WhisperKey(xs = xs, xp = encPub, signature = signature)
+            }
+        } else {
+            Logger.w(TAG, "loginWithoutPrivKey: no on-chain signature (pre-v1.6.1 PDA), using view-only mode")
+            viewOnlyWhisperKey(encPub)
+        }
+        // Persist the recovered key to the local cache so future sessions
+        // hit the "cache + registered flag set" path in ensureWhisperKey()
+        // and skip the on-chain lookup entirely. Skip for view-only mode
+        // (we don't have a signature to derive xs from).
+        val recoveredSig = recovered.signature
+        if (recoveredSig != null) {
+            viewModelScope.launch {
+                try {
+                    whisperKeyStore.deriveAndCache(recoveredSig)
+                    whisperKeyStore.setRegisteredOnChain(true)
+                    Logger.i(TAG, "loginWithoutPrivKey: cache persisted (future launches skip on-chain lookup)")
+                } catch (e: Throwable) {
+                    Logger.e(TAG, "loginWithoutPrivKey: cache persist failed (non-fatal)", e)
+                }
+            }
+        }
+        Logger.i(TAG, "loginWithoutPrivKey: entering home with WhisperKey enc_priv=${if (recovered.signature != null) "RECOVERED" else "view-only"}")
         _uiState.value = _uiState.value.copy(
-            whisperKey = viewOnlyKey,
+            whisperKey = recovered,
             whisperKeyInitialized = true,
             whisperKeyError = null,
             setupState = SetupState.Complete(onChain = true),
         )
     }
+
+    /** v1.9.2 helper: build the legacy v1.9.1 view-only stub. */
+    private fun viewOnlyWhisperKey(encPub: ByteArray): com.linmjt.whisperofsol.crypto.WhisperKey =
+        com.linmjt.whisperofsol.crypto.WhisperKey(
+            xs = ByteArray(32),  // dummy — won't decrypt
+            xp = encPub,
+        )
 
     /**
      * v1.9.1: SAFE subset of [ensureWhisperKey] for auto-call after wallet
@@ -509,21 +566,25 @@ class HomeViewModel(
         }
         // Step 2: on-chain PDA check (real RPC).
         val walletBase58 = com.solana.mobilewalletadapter.common.util.Base58.encode(_uiState.value.publicKey!!)
-        val onChainEncPub: ByteArray? = try {
-            withContext(Dispatchers.IO) { whisperIdRepo.findEncPubByWallet(walletBase58) }
+        val onChainWhisperId: com.linmjt.whisperofsol.data.WhisperIdRecord? = try {
+            withContext(Dispatchers.IO) { whisperIdRepo.findWhisperIdByWallet(walletBase58) }
         } catch (e: Throwable) {
             Logger.w(TAG, "refreshSetupStateFromChain: on-chain PDA lookup failed: ${e.message}")
             null
         }
+        val onChainEncPub = onChainWhisperId?.encPub
         if (onChainEncPub != null && onChainEncPub.size == 32) {
             val base64 = android.util.Base64.encodeToString(onChainEncPub, android.util.Base64.NO_WRAP)
+            val sigBase64: String? = onChainWhisperId.signature
+                ?.takeIf { it.size == 64 }
+                ?.let { android.util.Base64.encodeToString(it, android.util.Base64.NO_WRAP) }
             _uiState.value = _uiState.value.copy(
                 whisperKeyInitialized = true,
                 isSigningWhisperKey = false,
-                setupState = SetupState.ReadyToLogin(base64),
+                setupState = SetupState.ReadyToLogin(base64, sigBase64),
                 whisperKeyError = null,
             )
-            Logger.i(TAG, "refreshSetupStateFromChain: on-chain PDA found -- ReadyToLogin")
+            Logger.i(TAG, "refreshSetupStateFromChain: on-chain PDA found -- ReadyToLogin (sig recovered=${sigBase64 != null})")
             return
         }
         // No cache, no PDA — user needs to set up explicitly.
@@ -2165,10 +2226,18 @@ sealed class SetupState {
      * v1.9.1: User is already registered on-chain for the connected wallet
      * (PDA exists), but local X25519 privkey is missing (cache cleared, fresh
      * install, etc.). UI should show a "Login" CTA instead of "Set up Whisper ID"
-     * — logging in doesn't re-register, so saves GAS. Trade-off: old inbox
-     * messages encrypted to the missing privkey can't be decrypted.
+     * — logging in doesn't re-register, so saves GAS.
+     *
+     * v1.9.2: Trade-off relaxed. If `onChainSignatureBase64` is present
+     * (v1.6.1+ PDA), [HomeViewModel.loginWithoutPrivKey] re-derives the
+     * local X25519 secret from the on-chain signature (no wallet prompt) so
+     * decrypt still works. If null (pre-v1.6.1 PDA), the user gets a
+     * view-only key and old messages can't be decrypted.
      */
-    data class ReadyToLogin(val onChainEncPubBase64: String) : SetupState()
+    data class ReadyToLogin(
+        val onChainEncPubBase64: String,
+        val onChainSignatureBase64: String? = null,
+    ) : SetupState()
 }
 
 /**

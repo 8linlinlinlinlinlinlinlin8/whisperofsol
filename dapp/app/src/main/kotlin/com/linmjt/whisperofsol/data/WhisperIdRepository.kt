@@ -60,7 +60,8 @@ class WhisperIdRepository(
          *   - 136..137 bump (u8, 1)
          *   - 137..144 _pad (7)
          */
-        const val OFFSET_ENC_PUB = 8 + 32  // = 40 from start of account data
+        const val OFFSET_ENC_PUB = 8 + 32       // = 40 from start of account data
+        const val OFFSET_SIGNATURE = 8 + 32 + 32 // = 72 from start of account data
     }
 
     /**
@@ -82,6 +83,79 @@ class WhisperIdRepository(
             }
         }
         throw IllegalStateException("PDA derivation failed: ${pdaResult.exceptionOrNull()?.message}")
+    }
+
+    /**
+     * v1.9.2: Look up the recipient's full WhisperId record (enc_pub + signature)
+     * by their wallet address.
+     *
+     * Returns null if:
+     *   - PDA doesn't exist on chain (recipient never set up WhisperOfSol)
+     *   - PDA exists but data layout doesn't match expected size
+     *   - RPC error
+     *
+     * Returns a [WhisperIdRecord] otherwise. `signature` may be a 64-byte array
+     * for PDAs written by the v1.6.1+ register_whisper_id flow, or null for
+     * older PDAs (pre-v1.6.1 placeholder-only data).
+     */
+    suspend fun findWhisperIdByWallet(walletBase58: String): WhisperIdRecord? = withContext(Dispatchers.IO) {
+        val pda = try {
+            findWhisperIdPda(walletBase58)
+        } catch (e: Throwable) {
+            android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: PDA derive failed for ${walletBase58.take(8)}...", e)
+            return@withContext null
+        }
+        android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: looking up PDA=${pda.take(12)}... for wallet=${walletBase58.take(8)}...")
+        try {
+            val accountInfo = rpc.getAccountInfo(pda)
+            if (accountInfo == null) {
+                android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: getAccountInfo returned null — PDA not found or RPC error")
+                return@withContext null
+            }
+            val dataArr = accountInfo.optJSONArray("data")
+            if (dataArr == null) {
+                android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: accountInfo has no 'data' array")
+                return@withContext null
+            }
+            if (dataArr.length() < 1) {
+                android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: data array length=${dataArr.length()} (expected >= 1)")
+                return@withContext null
+            }
+            val dataB64 = dataArr.getString(0)
+            val data = android.util.Base64.decode(dataB64, android.util.Base64.DEFAULT)
+
+            if (data.size != WHISPER_ID_ACCOUNT_SIZE) {
+                android.util.Log.e("WSOL_DEBUG", "WhisperId PDA size mismatch: ${data.size} (expected $WHISPER_ID_ACCOUNT_SIZE) — outdated program?")
+                return@withContext null
+            }
+            // Verify wallet field matches (offset 8..40 == wallet pubkey)
+            val storedWallet = data.copyOfRange(8, 40)
+            val expectedWallet = Base58.decode(walletBase58)
+            if (!storedWallet.contentEquals(expectedWallet)) {
+                android.util.Log.e("WSOL_DEBUG", "WhisperId PDA wallet field mismatch. stored=${bytesToHex(storedWallet)} expected=${walletBase58.take(16)}...")
+                return@withContext null
+            }
+            val encPub = data.copyOfRange(OFFSET_ENC_PUB, OFFSET_ENC_PUB + 32)
+            android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: encPub=${bytesToHex(encPub)} size=${encPub.size}")
+            if (!isValidX25519PubKey(encPub)) {
+                android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: on-chain enc_pub looks suspicious (all-same bytes or low entropy)")
+            }
+            // v1.9.2: also extract the 64-byte signature for key recovery flows
+            // (loginWithoutPrivKey re-derives enc_priv from this signature so
+            // users don't have to re-sign on every fresh install).
+            val rawSig = data.copyOfRange(OFFSET_SIGNATURE, OFFSET_SIGNATURE + 64)
+            val signature: ByteArray? = if (rawSig.all { it == 0.toByte() }) {
+                // Pre-v1.6.1 PDAs had no signature; treat as missing.
+                android.util.Log.w(TAG, "findWhisperIdByWallet: on-chain signature is all-zero (legacy PDA, no recovery possible)")
+                null
+            } else {
+                rawSig
+            }
+            WhisperIdRecord(encPub = encPub, signature = signature)
+        } catch (e: Throwable) {
+            android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet failed for ${walletBase58.take(8)}...", e)
+            null
+        }
     }
 
     /**
@@ -207,4 +281,28 @@ class WhisperIdRepository(
             put(JSONObject().put("pubkey", "11111111111111111111111111111111").put("isSigner", false).put("isWritable", false))
         }
     }
+}
+
+/**
+ * v1.9.2: On-chain WhisperId PDA data, returned by [WhisperIdRepository.findWhisperIdByWallet].
+ *
+ * @property encPub 32-byte X25519 public key registered on-chain.
+ * @property signature 64-byte Ed25519 signature over the canonical
+ *   "WhisperOfSol encryption key v1 | <wallet_pubkey>" message. The wallet
+ *   produced this when the user originally ran Set up Whisper ID. Used by
+ *   [loginWithoutPrivKey] to re-derive the local X25519 secret without
+ *   re-prompting the wallet. Null for pre-v1.6.1 PDAs that wrote no signature.
+ */
+data class WhisperIdRecord(
+    val encPub: ByteArray,
+    val signature: ByteArray?,
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is WhisperIdRecord) return false
+        return encPub.contentEquals(other.encPub) &&
+            (signature?.contentEquals(other.signature ?: ByteArray(0)) ?: (other.signature == null))
+    }
+    override fun hashCode(): Int =
+        encPub.contentHashCode() * 31 + (signature?.contentHashCode() ?: 0)
 }
