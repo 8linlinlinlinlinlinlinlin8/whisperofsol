@@ -22,10 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.linmjt.whisperofsol.data.WalletRepository
+import com.linmjt.whisperofsol.ui.AddressBookPrefs
+import com.linmjt.whisperofsol.ui.components.PostSendDialog
 import com.linmjt.whisperofsol.ui.screens.InboxScreen
 import com.linmjt.whisperofsol.ui.screens.MainScreen
 import com.linmjt.whisperofsol.ui.screens.RulesScreen
@@ -357,6 +361,64 @@ fun WhisperOfSolApp(
                     onBack = { router.navigate(Route.Settings) },
                 )
             }
+        }
+
+        // v3.0.8 (bug fix 2026-10-13): Post-send prompt moved to app-level
+        // so it actually renders. The previous implementation lived inside
+        // SendWhisperScreen, but that screen returns early when
+        // SendCompletePanel is shown (`if (showShareCode) { ...; return }`),
+        // so the dialog state was set but never rendered.
+        //
+        // Now the dialog renders on top of any route — user sees the
+        // success view (Inbox or SendCompletePanel) in the background and
+        // chooses Save / Not now from the modal.
+        //
+        // Triggered by `uiState.lastSentRecipient` becoming non-null on a
+        // successful send (set in HomeViewModel.onSignAndSendResult).
+        // Dismiss / save both call `clearLastSent` so subsequent navigation
+        // doesn't re-trigger.
+        var postSendRecipient by remember { mutableStateOf<String?>(null) }
+        // Debug-only synthetic trigger (v3.0.8.1): exercises the dialog
+        // without going through the full send flow. On a Seeker device
+        // MWA is broken (ECONNREFUSED) so we can't otherwise verify the
+        // dialog renders after a real send. Stripped from release builds.
+        //   adb shell am start ... --es debug.app.force_postsend <address>
+        LaunchedEffect(Unit) {
+            if (com.linmjt.whisperofsol.BuildConfig.DEBUG) {
+                val forced = activity.intent?.getStringExtra("debug.app.force_postsend")
+                if (!forced.isNullOrBlank()
+                    && !AddressBookPrefs.contains(activity, forced)
+                    && !AddressBookPrefs.isPostSendPromptDisabled(activity)
+                ) {
+                    postSendRecipient = forced
+                }
+            }
+        }
+        LaunchedEffect(uiState.lastSentRecipient) {
+            val r = uiState.lastSentRecipient
+            if (!r.isNullOrBlank()
+                && !AddressBookPrefs.contains(activity, r)
+                && !AddressBookPrefs.isPostSendPromptDisabled(activity)
+            ) {
+                postSendRecipient = r
+            }
+        }
+        postSendRecipient?.let { addr ->
+            PostSendDialog(
+                recipientAddress = addr,
+                onDismiss = {
+                    // "Not now" — no save, just close + clear the trigger.
+                    postSendRecipient = null
+                    viewModel.clearLastSent()
+                },
+                onSave = { nickname ->
+                    // "Save" — write to prefs (empty nickname ok; user can
+                    // rename later from the Manage sheet).
+                    AddressBookPrefs.add(activity, addr, nickname)
+                    postSendRecipient = null
+                    viewModel.clearLastSent()
+                },
+            )
         }
     }
 }

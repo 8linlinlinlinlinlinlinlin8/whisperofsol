@@ -389,53 +389,18 @@ fun SendWhisperScreen(
                 )
             }
 
-            // v3.0.8: Post-send prompt — fires when a send completes and the
-            // recipient isn't in the book yet. Triggered by lastSentNonce
-            // transitioning from null → non-null. Reset by clearLastSent
-            // (next send or back navigation).
-            var postSendRecipient by remember { mutableStateOf<String?>(null) }
-            // v3.0.8 (debug only): allow forcing the post-send dialog via
-            // Intent extra so the test on a Seeker device that can't MWA-
-            // connect can still exercise this flow.
+            // v3.0.8: Post-send prompt has been moved to the app-level
+            // (WhisperOfSolApp in MainActivity.kt) because this screen
+            // returns early when SendCompletePanel is shown (the success
+            // view that pops up after a send) — see the `if (showShareCode)
+            // { ...; return }` block above. With the dialog logic here, the
+            // state would be set but the dialog would never render.
+            // App-level dialog renders on top of any screen and survives
+            // navigation away from SendWhisper.
+            //
+            // Debug-only force trigger (v3.0.8): still wired here so a test
+            // can exercise the dialog without going through the full send flow.
             //   adb shell am start ... --es debug.app.force_postsend <address>
-            LaunchedEffect(Unit) {
-                if (com.linmjt.whisperofsol.BuildConfig.DEBUG) {
-                    val forced = (context as? android.app.Activity)
-                        ?.intent?.getStringExtra("debug.app.force_postsend")
-                    if (!forced.isNullOrBlank()
-                        && !AddressBookPrefs.contains(context, forced)
-                        && !AddressBookPrefs.isPostSendPromptDisabled(context)
-                    ) {
-                        postSendRecipient = forced
-                    }
-                }
-            }
-            LaunchedEffect(uiState.lastSentNonce) {
-                if (uiState.lastSentNonce != null) {
-                    val r = uiState.lastSentRecipient
-                    if (!r.isNullOrBlank()
-                        && !AddressBookPrefs.contains(context, r)
-                        && !AddressBookPrefs.isPostSendPromptDisabled(context)
-                    ) {
-                        postSendRecipient = r
-                    }
-                }
-            }
-            postSendRecipient?.let { addr ->
-                com.linmjt.whisperofsol.ui.components.PostSendDialog(
-                    recipientAddress = addr,
-                    onDismiss = {
-                        // "Not now" — no save, just close the dialog.
-                        postSendRecipient = null
-                    },
-                    onSave = { nickname ->
-                        // "Save" — write to prefs (empty nickname ok; user can
-                        // rename later from the Manage sheet).
-                        AddressBookPrefs.add(context, addr, nickname)
-                        postSendRecipient = null
-                    },
-                )
-            }
 
             // ─── Message ─────────────────────────────────────────────
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

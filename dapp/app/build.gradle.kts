@@ -12,7 +12,12 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 106
+        versionCode = 108
+        // v3.0.9: Post-send prompt was invisible (dialog logic lived in
+        //   SendWhisperScreen but that screen returns early when
+        //   SendCompletePanel shows, so the dialog state was set but never
+        //   rendered). Moved the dialog to app-level (WhisperOfSolApp) so
+        //   it renders on top of any route.
         // v3.0.8: AddressBook inline sheet (search + sort), post-send
         //   prompt with opt-out checkbox, QR scan in AddAddressDialog,
         //   useCount/lastUsedAt tracking, exchange-style row design.
@@ -48,7 +53,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.8"
+        versionName = "3.0.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
