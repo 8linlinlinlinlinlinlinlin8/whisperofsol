@@ -4,6 +4,7 @@ import com.linmjt.whisperofsol.service.SolanaRpcService
 import com.solana.publickey.SolanaPublicKey
 import com.linmjt.whisperofsol.util.Base58
 import com.linmjt.whisperofsol.util.Logger
+import com.linmjt.whisperofsol.util.WsolLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -102,43 +103,43 @@ class WhisperIdRepository(
         val pda = try {
             findWhisperIdPda(walletBase58)
         } catch (e: Throwable) {
-            android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: PDA derive failed for ${walletBase58.take(8)}...", e)
+            WsolLog.e("findWhisperIdByWallet: PDA derive failed for ${walletBase58.take(8)}...", e)
             return@withContext null
         }
-        android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: looking up PDA=${pda.take(12)}... for wallet=${walletBase58.take(8)}...")
+        WsolLog.e("findWhisperIdByWallet: looking up PDA=${pda.take(12)}... for wallet=${walletBase58.take(8)}...")
         try {
             val accountInfo = rpc.getAccountInfo(pda)
             if (accountInfo == null) {
-                android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: getAccountInfo returned null — PDA not found or RPC error")
+                WsolLog.e("findWhisperIdByWallet: getAccountInfo returned null — PDA not found or RPC error")
                 return@withContext null
             }
             val dataArr = accountInfo.optJSONArray("data")
             if (dataArr == null) {
-                android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: accountInfo has no 'data' array")
+                WsolLog.e("findWhisperIdByWallet: accountInfo has no 'data' array")
                 return@withContext null
             }
             if (dataArr.length() < 1) {
-                android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: data array length=${dataArr.length()} (expected >= 1)")
+                WsolLog.e("findWhisperIdByWallet: data array length=${dataArr.length()} (expected >= 1)")
                 return@withContext null
             }
             val dataB64 = dataArr.getString(0)
             val data = android.util.Base64.decode(dataB64, android.util.Base64.DEFAULT)
 
             if (data.size != WHISPER_ID_ACCOUNT_SIZE) {
-                android.util.Log.e("WSOL_DEBUG", "WhisperId PDA size mismatch: ${data.size} (expected $WHISPER_ID_ACCOUNT_SIZE) — outdated program?")
+                WsolLog.e("WhisperId PDA size mismatch: ${data.size} (expected $WHISPER_ID_ACCOUNT_SIZE) — outdated program?")
                 return@withContext null
             }
             // Verify wallet field matches (offset 8..40 == wallet pubkey)
             val storedWallet = data.copyOfRange(8, 40)
             val expectedWallet = Base58.decode(walletBase58)
             if (!storedWallet.contentEquals(expectedWallet)) {
-                android.util.Log.e("WSOL_DEBUG", "WhisperId PDA wallet field mismatch. stored=${bytesToHex(storedWallet)} expected=${walletBase58.take(16)}...")
+                WsolLog.e("WhisperId PDA wallet field mismatch. stored=${bytesToHex(storedWallet)} expected=${walletBase58.take(16)}...")
                 return@withContext null
             }
             val encPub = data.copyOfRange(OFFSET_ENC_PUB, OFFSET_ENC_PUB + 32)
-            android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: encPub=${bytesToHex(encPub)} size=${encPub.size}")
+            WsolLog.e("findWhisperIdByWallet: encPub=${bytesToHex(encPub)} size=${encPub.size}")
             if (!isValidX25519PubKey(encPub)) {
-                android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet: on-chain enc_pub looks suspicious (all-same bytes or low entropy)")
+                WsolLog.e("findWhisperIdByWallet: on-chain enc_pub looks suspicious (all-same bytes or low entropy)")
             }
             // v1.9.2: also extract the 64-byte signature for key recovery flows
             // (loginWithoutPrivKey re-derives enc_priv from this signature so
@@ -153,7 +154,7 @@ class WhisperIdRepository(
             }
             WhisperIdRecord(encPub = encPub, signature = signature)
         } catch (e: Throwable) {
-            android.util.Log.e("WSOL_DEBUG", "findWhisperIdByWallet failed for ${walletBase58.take(8)}...", e)
+            WsolLog.e("findWhisperIdByWallet failed for ${walletBase58.take(8)}...", e)
             null
         }
     }
@@ -172,47 +173,47 @@ class WhisperIdRepository(
         val pda = try {
             findWhisperIdPda(walletBase58)
         } catch (e: Throwable) {
-            android.util.Log.e("WSOL_DEBUG", "findEncPubByWallet: PDA derive failed for ${walletBase58.take(8)}...", e)
+            WsolLog.e("findEncPubByWallet: PDA derive failed for ${walletBase58.take(8)}...", e)
             return@withContext null
         }
-        android.util.Log.e("WSOL_DEBUG", "findEncPubByWallet: looking up PDA=${pda.take(12)}... for wallet=${walletBase58.take(8)}...")
+        WsolLog.e("findEncPubByWallet: looking up PDA=${pda.take(12)}... for wallet=${walletBase58.take(8)}...")
         try {
             val accountInfo = rpc.getAccountInfo(pda)
             if (accountInfo == null) {
-                android.util.Log.e("WSOL_DEBUG", "findEncPubByWallet: getAccountInfo returned null — PDA not found or RPC error")
+                WsolLog.e("findEncPubByWallet: getAccountInfo returned null — PDA not found or RPC error")
                 return@withContext null
             }
             val dataArr = accountInfo.optJSONArray("data")
             if (dataArr == null) {
-                android.util.Log.e("WSOL_DEBUG", "findEncPubByWallet: accountInfo has no 'data' array")
+                WsolLog.e("findEncPubByWallet: accountInfo has no 'data' array")
                 return@withContext null
             }
             if (dataArr.length() < 1) {
-                android.util.Log.e("WSOL_DEBUG", "findEncPubByWallet: data array length=${dataArr.length()} (expected >= 1)")
+                WsolLog.e("findEncPubByWallet: data array length=${dataArr.length()} (expected >= 1)")
                 return@withContext null
             }
             val dataB64 = dataArr.getString(0)
             val data = android.util.Base64.decode(dataB64, android.util.Base64.DEFAULT)
 
             if (data.size != WHISPER_ID_ACCOUNT_SIZE) {
-                android.util.Log.e("WSOL_DEBUG", "WhisperId PDA size mismatch: ${data.size} (expected $WHISPER_ID_ACCOUNT_SIZE) — outdated program?")
+                WsolLog.e("WhisperId PDA size mismatch: ${data.size} (expected $WHISPER_ID_ACCOUNT_SIZE) — outdated program?")
                 return@withContext null
             }
             // Verify wallet field matches (offset 8..40 == wallet pubkey)
             val storedWallet = data.copyOfRange(8, 40)
             val expectedWallet = Base58.decode(walletBase58)
             if (!storedWallet.contentEquals(expectedWallet)) {
-                android.util.Log.e("WSOL_DEBUG", "WhisperId PDA wallet field mismatch. stored=${bytesToHex(storedWallet)} expected=${walletBase58.take(16)}...")
+                WsolLog.e("WhisperId PDA wallet field mismatch. stored=${bytesToHex(storedWallet)} expected=${walletBase58.take(16)}...")
                 return@withContext null
             }
             val encPub = data.copyOfRange(OFFSET_ENC_PUB, OFFSET_ENC_PUB + 32)
-            android.util.Log.e("WSOL_DEBUG", "findEncPubByWallet: encPub=${bytesToHex(encPub)} size=${encPub.size}")
+            WsolLog.e("findEncPubByWallet: encPub=${bytesToHex(encPub)} size=${encPub.size}")
             if (!isValidX25519PubKey(encPub)) {
-                android.util.Log.e("WSOL_DEBUG", "findEncPubByWallet: on-chain enc_pub looks suspicious (all-same bytes or low entropy)")
+                WsolLog.e("findEncPubByWallet: on-chain enc_pub looks suspicious (all-same bytes or low entropy)")
             }
             encPub
         } catch (e: Throwable) {
-            android.util.Log.e("WSOL_DEBUG", "findEncPubByWallet failed for ${walletBase58.take(8)}...", e)
+            WsolLog.e("findEncPubByWallet failed for ${walletBase58.take(8)}...", e)
             null
         }
     }

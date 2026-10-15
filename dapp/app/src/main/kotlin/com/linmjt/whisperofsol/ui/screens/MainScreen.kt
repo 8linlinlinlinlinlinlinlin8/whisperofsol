@@ -71,6 +71,7 @@ import com.linmjt.whisperofsol.ui.theme.HeroCardShape
 import com.linmjt.whisperofsol.ui.theme.Midnight900
 import com.linmjt.whisperofsol.ui.theme.Red500
 import com.linmjt.whisperofsol.ui.theme.Red700
+import com.linmjt.whisperofsol.util.WsolLog
 import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
 import androidx.compose.ui.res.stringResource
@@ -949,7 +950,7 @@ private fun generateQrCodeBitmap(text: String, sizePx: Int): Bitmap? {
             setPixels(pixels, 0, width, 0, 0, width, height)
         }
     } catch (e: Exception) {
-        android.util.Log.e("WSOL_DEBUG", "generateQrCodeBitmap failed: ${e.message}")
+        WsolLog.e("generateQrCodeBitmap failed: ${e.message}")
         null
     }
 }// Snippet — append at end of MainScreen.kt

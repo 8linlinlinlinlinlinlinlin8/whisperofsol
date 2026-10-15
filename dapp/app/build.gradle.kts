@@ -12,7 +12,21 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 112
+        versionCode = 113
+        // v3.0.14: log hygiene + crypto-self-test cleanup.
+        //   - 48 ad-hoc `WSOL_DEBUG` Log.e calls in HomeViewModel +
+        //     WhisperIdRepository + MainScreen now routed through new
+        //     WsolLog (util/WsolLog.kt) which gates on BuildConfig.DEBUG.
+        //     Release builds elide the entire call (no PDA structure,
+        //     no signature traces, no key-derivation intermediate state).
+        //   - Two sites that printed full 32-byte X25519 secrets (the
+        //     enc_priv in loginWithoutPrivKey + the sharedSecret in
+        //     fetchMessageDetail) now truncate to first 4 bytes (8 hex
+        //     chars + ellipsis) — still enough to disambiguate during
+        //     debug, but no full private key in logcat.
+        //   - CryptoSelfTest.java removed (was a one-off plain-JVM
+        //     reproducer for the v3.0.13 algorithm verification; served
+        //     its purpose, the e2e test now covers regression).
         // v3.0.13: Login now re-derives enc_priv from the on-chain WhisperId
         //   PDA signature (v1.6.1+ flow), so fresh installs + Login (no
         //   wallet re-prompt) can decrypt old messages. Previously Login
@@ -82,7 +96,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.13"
+        versionName = "3.0.14"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

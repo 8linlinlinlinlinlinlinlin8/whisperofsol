@@ -14,6 +14,7 @@ import com.linmjt.whisperofsol.service.InboxMessageRef
 import com.linmjt.whisperofsol.service.MessageDetail
 import com.linmjt.whisperofsol.service.WhisperService
 import com.linmjt.whisperofsol.util.Logger
+import com.linmjt.whisperofsol.util.WsolLog
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -393,7 +394,7 @@ class HomeViewModel(
         )
         if (!emitted) {
             Logger.e(TAG, "signMessageRequests.tryEmit DROPPED requestId=$requestId -- buffer full or no subscriber")
-            android.util.Log.e("WSOL_DEBUG", "signMessageRequest DROPPED requestId=$requestId")
+            WsolLog.e("signMessageRequest DROPPED requestId=$requestId")
             _uiState.value = _uiState.value.copy(
                 isSigningWhisperKey = false,
                 setupState = SetupState.Failed(
@@ -464,11 +465,11 @@ class HomeViewModel(
             // signing message changed across versions) — fall back to view-only.
             if (!derivedXp.contentEquals(encPub)) {
                 Logger.e(TAG, "loginWithoutPrivKey: DERIVED enc_pub != on-chain enc_pub (signature is non-deterministic or signing message changed); falling back to view-only")
-                android.util.Log.e("WSOL_DEBUG", "loginWithoutPrivKey RECOVERY_MISMATCH: derived=${android.util.Base64.encodeToString(derivedXp, android.util.Base64.NO_WRAP).take(16)}… onchain=${s.onChainEncPubBase64.take(16)}…")
+                WsolLog.e("loginWithoutPrivKey RECOVERY_MISMATCH: derived=${android.util.Base64.encodeToString(derivedXp, android.util.Base64.NO_WRAP).take(16)}… onchain=${s.onChainEncPubBase64.take(16)}…")
                 viewOnlyWhisperKey(encPub)
             } else {
                 Logger.i(TAG, "loginWithoutPrivKey: RECOVERED full enc_priv from on-chain signature (no wallet prompt needed)")
-                android.util.Log.e("WSOL_DEBUG", "loginWithoutPrivKey RECOVERED: enc_priv=${xs.joinToString("") { "%02x".format(it) }}")
+                WsolLog.e("loginWithoutPrivKey RECOVERED: enc_priv=${xs.take(4).joinToString("") { "%02x".format(it) }}…")
                 com.linmjt.whisperofsol.crypto.WhisperKey(xs = xs, xp = encPub, signature = signature)
             }
         } else {
@@ -616,7 +617,7 @@ class HomeViewModel(
     suspend fun onSignMessageResult(requestId: Long, signature: ByteArray?) {
         if (signature == null) {
             Logger.e(TAG, "onSignMessageResult: signature=null -- setup FAILED, no fallback")
-            android.util.Log.e("WSOL_DEBUG", "onSignMessageResult: signature=null -- setup FAILED")
+            WsolLog.e("onSignMessageResult: signature=null -- setup FAILED")
             _uiState.value = _uiState.value.copy(
                 whisperKey = null,
                 isSigningWhisperKey = false,
@@ -634,7 +635,7 @@ class HomeViewModel(
         val key = whisperKeyStore.deriveAndCache(signature)
         if (key == null) {
             Logger.e(TAG, "onSignMessageResult: signature present but deriveAndCache returned null -- setup FAILED")
-            android.util.Log.e("WSOL_DEBUG", "onSignMessageResult: signature present but deriveAndCache returned null -- setup FAILED")
+            WsolLog.e("onSignMessageResult: signature present but deriveAndCache returned null -- setup FAILED")
             _uiState.value = _uiState.value.copy(
                 whisperKey = null,
                 isSigningWhisperKey = false,
@@ -1142,12 +1143,12 @@ class HomeViewModel(
     private suspend fun lookupRecipientEncPubSync(address: String): ByteArray? {
         val trimmed = address.trim()
         if (trimmed.isEmpty() || trimmed.length !in 32..44) {
-            android.util.Log.e("WSOL_DEBUG", "lookupRecipientEncPubSync: bad address format len=${trimmed.length}")
+            WsolLog.e("lookupRecipientEncPubSync: bad address format len=${trimmed.length}")
             return null
         }
-        android.util.Log.e("WSOL_DEBUG", "lookupRecipientEncPubSync: calling findEncPubByWallet for ${trimmed.take(12)}...")
+        WsolLog.e("lookupRecipientEncPubSync: calling findEncPubByWallet for ${trimmed.take(12)}...")
         val encPub = whisperIdRepo.findEncPubByWallet(trimmed)
-        android.util.Log.e("WSOL_DEBUG", "lookupRecipientEncPubSync: findEncPubByWallet returned ${encPub != null}")
+        WsolLog.e("lookupRecipientEncPubSync: findEncPubByWallet returned ${encPub != null}")
         if (encPub != null) {
             _uiState.value = _uiState.value.copy(
                 recipientLookupStatus = RecipientLookupStatus.Found,
@@ -1230,7 +1231,7 @@ class HomeViewModel(
             )
             if (!emitted) {
                 Logger.e(TAG, "signAndSendRequests.tryEmit DROPPED -- RegisterWhisperId")
-                android.util.Log.e("WSOL_DEBUG", "registerWhisperIdOnChain: signAndSend DROPPED")
+                WsolLog.e("registerWhisperIdOnChain: signAndSend DROPPED")
             }
         } catch (e: Throwable) {
             Logger.e(TAG, "registerWhisperIdOnChain: build failed", e)
@@ -1329,7 +1330,7 @@ class HomeViewModel(
                 )
                 if (!emitted) {
                     Logger.e(TAG, "signAndSendRequests.tryEmit DROPPED -- InitInbox")
-                    android.util.Log.e("WSOL_DEBUG", "migrateInboxBump: signAndSend DROPPED")
+                    WsolLog.e("migrateInboxBump: signAndSend DROPPED")
                 }
             } catch (e: Throwable) {
                 Logger.e(TAG, "migrateInboxBump", e)
@@ -1388,7 +1389,7 @@ class HomeViewModel(
                 )
                 if (!emitted) {
                     Logger.e(TAG, "signAndSendRequests.tryEmit DROPPED -- UnlockMessage (1st site)")
-                    android.util.Log.e("WSOL_DEBUG", "unlockByRef (1st): signAndSend DROPPED")
+                    WsolLog.e("unlockByRef (1st): signAndSend DROPPED")
                 }
             } catch (e: Throwable) {
                 Logger.e(TAG, "unlockByRef error", e)
@@ -1484,7 +1485,7 @@ class HomeViewModel(
                 )
                 if (!emitted) {
                     Logger.e(TAG, "signAndSendRequests.tryEmit DROPPED -- UnlockMessage (2nd site)")
-                    android.util.Log.e("WSOL_DEBUG", "unlockByRef (2nd): signAndSend DROPPED")
+                    WsolLog.e("unlockByRef (2nd): signAndSend DROPPED")
                 }
             } catch (e: Throwable) {
                 Logger.e(TAG, "Unlock whisper error", e)
@@ -1543,7 +1544,7 @@ class HomeViewModel(
                 // 1 RPC call per Send (no per-keystroke spam).
                 val finalEncPub: ByteArray? = lookupRecipientEncPubSync(recipientAddress)
                 if (finalEncPub == null) {
-                    android.util.Log.e("WSOL_DEBUG", "sendWhisper: REFUSED — no on-chain enc_pub for ${recipientAddress.take(12)}... (recipient must run Whisper ID setup first)")
+                    WsolLog.e("sendWhisper: REFUSED — no on-chain enc_pub for ${recipientAddress.take(12)}... (recipient must run Whisper ID setup first)")
                     _uiState.value = _uiState.value.copy(
                         isSending = false,
                         error = UiError.RecipientNotSetup,
@@ -1566,7 +1567,7 @@ class HomeViewModel(
                         return@launch
                     }
                     !whisperIdRepo.isValidX25519PubKey(finalEncPub) -> {
-                        android.util.Log.e("WSOL_DEBUG", "sendWhisper: REFUSED — on-chain enc_pub=${bytesToHex(finalEncPub)} is junk (placeholder/legacy)")
+                        WsolLog.e("sendWhisper: REFUSED — on-chain enc_pub=${bytesToHex(finalEncPub)} is junk (placeholder/legacy)")
                         _uiState.value = _uiState.value.copy(
                             isSending = false,
                             error = UiError.RecipientEncPubCorrupted,
@@ -1579,8 +1580,8 @@ class HomeViewModel(
                     }
                 }
                 // v1.8.0 DEBUG: log enc_pub used for encryption as ERROR (always shows in logcat).
-                android.util.Log.e("WSOL_DEBUG", "RECIPIENT_PUB_USED=${bytesToHex(recipientX25519Pub)}")
-                android.util.Log.e("WSOL_DEBUG", "RECIPIENT_PUB_HEX_SHORT=${bytesToHex(recipientX25519Pub).take(16)}…")
+                WsolLog.e("RECIPIENT_PUB_USED=${bytesToHex(recipientX25519Pub)}")
+                WsolLog.e("RECIPIENT_PUB_HEX_SHORT=${bytesToHex(recipientX25519Pub).take(16)}…")
                 _uiState.value = _uiState.value.copy(
                     debugEncPubHex = bytesToHex(recipientX25519Pub),
                 )
@@ -1682,7 +1683,7 @@ class HomeViewModel(
         )
         if (!emitted) {
             Logger.e(TAG, "signAndSendRequests.tryEmit DROPPED -- SendMessage")
-            android.util.Log.e("WSOL_DEBUG", "attemptSendWhisper: signAndSend DROPPED")
+            WsolLog.e("attemptSendWhisper: signAndSend DROPPED")
         }
     }
 
@@ -1879,21 +1880,21 @@ class HomeViewModel(
                                 val xs = _uiState.value.whisperKey?.xs
                                 // v1.8.2 DEBUG: log cached enc_priv + derived enc_pub + eph_pub
                                 // so we can see if it matches what's on chain.
-                                android.util.Log.e("WSOL_DEBUG", "=== DECRYPT ATTEMPT ===")
+                                WsolLog.e("=== DECRYPT ATTEMPT ===")
                                 if (xs != null) {
-                                    android.util.Log.e("WSOL_DEBUG", "  cached enc_priv = ${bytesToHex(xs)}")
+                                    WsolLog.e("  cached enc_priv = ${bytesToHex(xs.copyOfRange(0, 4))}…")
                                     val xp = com.google.crypto.tink.subtle.X25519.publicFromPrivate(xs)
-                                    android.util.Log.e("WSOL_DEBUG", "  derived enc_pub  = ${bytesToHex(xp)}")
+                                    WsolLog.e("  derived enc_pub  = ${bytesToHex(xp)}")
                                 }
-                                android.util.Log.e("WSOL_DEBUG", "  msg eph_pub (from chain) = ${detail.encryptedKeyHex.take(0)}...wait see below")
+                                WsolLog.e("  msg eph_pub (from chain) = (computed below)")
                                 val plaintext = if (xs != null) {
                                     try {
                                         val ciphertext = hexToBytes(detail.encryptedContentHex)
                                         val encryptedKey = hexToBytes(detail.encryptedKeyHex)
                                         val ephPub2 = encryptedKey.copyOfRange(0, 32)
-                                        android.util.Log.e("WSOL_DEBUG", "  msg eph_pub (parsed)    = ${bytesToHex(ephPub2)}")
+                                        WsolLog.e("  msg eph_pub (parsed)    = ${bytesToHex(ephPub2)}")
                                         val ss = com.google.crypto.tink.subtle.X25519.computeSharedSecret(xs, ephPub2)
-                                        android.util.Log.e("WSOL_DEBUG", "  computed sharedSecret   = ${bytesToHex(ss)}")
+                                        WsolLog.e("  computed sharedSecret   = ${bytesToHex(ss.copyOfRange(0, 4))}…")
                                         val pt = WhisperCrypto.decryptForRecipient(
                                             encryptedContent = ciphertext,
                                             encryptedKeyBytes = encryptedKey,
@@ -1901,16 +1902,16 @@ class HomeViewModel(
                                         )
                                         val ptStr = String(pt, Charsets.UTF_8)
                                         Logger.d(TAG, "decrypt SUCCESS: ${ptStr.take(80)}")
-                                        android.util.Log.e("WSOL_DEBUG", "  RESULT: SUCCESS — plaintext=${ptStr.take(80)}")
+                                        WsolLog.e("  RESULT: SUCCESS — plaintext=${ptStr.take(80)}")
                                         ptStr
                                     } catch (e: Exception) {
                                         Logger.w(TAG, "decrypt failed: ${e.message}")
-                                        android.util.Log.e("WSOL_DEBUG", "  RESULT: FAILED — ${e.message}")
+                                        WsolLog.e("  RESULT: FAILED — ${e.message}")
                                         null
                                     }
                                 } else {
                                     Logger.w(TAG, "decrypt skipped: no whisperKey loaded")
-                                    android.util.Log.e("WSOL_DEBUG", "  RESULT: SKIPPED — no whisperKey in state")
+                                    WsolLog.e("  RESULT: SKIPPED — no whisperKey in state")
                                     null
                                 }
                                 _uiState.value = _uiState.value.copy(
@@ -1968,7 +1969,7 @@ class HomeViewModel(
             SendPurpose.RegisterWhisperId -> {
                 if (signature != null) {
                     Logger.d(TAG, "register_whisper_id OK: $signature")
-                    android.util.Log.e("WSOL_DEBUG", "register_whisper_id OK: $signature -- PDA written")
+                    WsolLog.e("register_whisper_id OK: $signature -- PDA written")
                     // v1.8.5: persist the registeredOnChain flag so next app
                     // launch can trust the cached WhisperKey (no silent-fail).
                     // v1.8.15: setRegisteredOnChain is now suspend + IO-dispatched
@@ -1990,7 +1991,7 @@ class HomeViewModel(
                     // v1.8.15: setRegisteredOnChain is now suspend -- fire-and-forget.
                     viewModelScope.launch { whisperKeyStore.setRegisteredOnChain(false) }
                     Logger.e(TAG, "register_whisper_id FAILED: $error")
-                    android.util.Log.e("WSOL_DEBUG", "register_whisper_id FAILED: $error -- PDA NOT written on chain. Setup blocked.")
+                    WsolLog.e("register_whisper_id FAILED: $error -- PDA NOT written on chain. Setup blocked.")
                     _uiState.value = _uiState.value.copy(
                         whisperIdOnChainRegistered = false,
                         whisperIdRegistrationError = "register_whisper_id failed: $error",
