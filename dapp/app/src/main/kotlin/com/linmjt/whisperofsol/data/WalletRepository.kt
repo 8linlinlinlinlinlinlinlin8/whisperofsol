@@ -20,6 +20,17 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * WalletRepository — MWA 2.2.0 connection to Seed Vault wallet
  *
+ * v3.0.20: Seeker-only design. This app only supports Seed Vault
+ * (com.solanamobile.wallet, Seeker 內建系統級 MWA provider).
+ * 對其他 MWA 錢包 (Solflare / Backpack / Phantom) 不支援也不測試:
+ *   - AndroidManifest.xml <queries> 只列 com.solanamobile.wallet
+ *   - ConnectionIdentity 用 docs.solanamobile.com (Seed Vault 友好)
+ *   - Seed Vault 是 system-level MWA provider,Seeker OS 自動 launch
+ *
+ * 為什麼不支援其他錢包: ConnectionIdentity.favicon.svg 的 fetch
+ * 在非 Seed Vault 環境可能失敗(各錢包對 identityUri 處理不同),
+ * 為了避免混淆的 UX,我們在 manifest 層面明確只查詢 Seed Vault。
+ *
  * Real MWA integration (no stubs):
  *   1. connect(activityResultSender) → launches MWA authorize → Seed Vault prompt
  *   2. signAndSendTransactions(sender, transactions) → MWA 2.2.0 transact { ops -> signAndSendTransactions }

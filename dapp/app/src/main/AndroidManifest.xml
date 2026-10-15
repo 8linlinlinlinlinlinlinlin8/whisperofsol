@@ -16,16 +16,12 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
-    <!-- MWA: 查詢已安裝的 MWA-compat 錢包 (Android 11+ package visibility) -->
+    <!-- MWA: 查詢 Seed Vault (Android 11+ package visibility)
+         v3.0.20: Seeker-only — 移除 Solflare / Backpack / Phantom。
+         Seed Vault (com.solanamobile.wallet) 是 Seeker 內建系統級 MWA provider,
+         app 設計上只針對 Seed Vault 開發,其他錢包不支援也不測試。 -->
     <queries>
-        <!-- Saga / Seeker 預裝 Seed Vault (官方) -->
         <package android:name="com.solanamobile.wallet" />
-        <!-- Solflare wallet -->
-        <package android:name="com.solflare.mobile" />
-        <!-- Backpack wallet -->
-        <package android:name="app.backpack.mobile" />
-        <!-- Phantom wallet -->
-        <package android:name="com.phantom" />
     </queries>
 
     <application
