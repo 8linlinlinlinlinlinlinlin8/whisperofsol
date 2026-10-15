@@ -214,8 +214,9 @@ fun SendWhisperScreen(
             }
 
             // ─── Hero illustration ───────────────────────────────────
-            // v3.0.18: cyberpunk gradient border (gold → tertiaryContainer → gold, 1.0dp, diagonal).
-            // v3.0.17 typography kept — titleSmall (14sp SemiBold) + bodySmall (12sp).
+            // v3.0.19: solid body (no alpha) — fix "dark middle / light border" contrast issue.
+            // tertiaryContainer in dark = Gold700 (deep amber), gradient border + icon stay gold-on-amber.
+            // v3.0.18 gradient border + v3.0.17 typography kept.
             // Text 不變: "Your message is sealed" / "Only the recipient can read it."
             Box(
                 modifier = Modifier
@@ -227,7 +228,7 @@ fun SendWhisperScreen(
                         spotColor = MaterialTheme.colorScheme.tertiary,
                     )
                     .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
                         shape = RoundedCornerShape(20.dp),
                     )
                     .border(
@@ -235,7 +236,7 @@ fun SendWhisperScreen(
                         brush = Brush.linearGradient(
                             colors = listOf(
                                 MaterialTheme.colorScheme.tertiary,
-                                MaterialTheme.colorScheme.tertiaryContainer,
+                                MaterialTheme.colorScheme.onTertiaryContainer,
                                 MaterialTheme.colorScheme.tertiary,
                             ),
                         ),
