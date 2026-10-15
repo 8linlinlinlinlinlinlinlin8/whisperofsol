@@ -12,7 +12,14 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 109
+        versionCode = 110
+        // v3.0.11: Post-send success state was lost on activity recreation.
+        //   After MWA returns, the framework can recreate the activity
+        //   (config change, memory pressure, or process death). Without
+        //   persistence, the new ViewModel has lastSentNonce = null, so
+        //   the user lands on the empty send form instead of seeing
+        //   SendCompletePanel with the share-code. Now persisting via
+        //   SavedStateHandle so the success state survives recreation.
         // v3.0.10: Post-send dialog tap-through bug. The Material 3
         //   AlertDialog has `dismissOnClickOutside = true` by default, so
         //   a tap on the scrim dismissed the dialog AND the same tap
@@ -62,7 +69,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.10"
+        versionName = "3.0.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

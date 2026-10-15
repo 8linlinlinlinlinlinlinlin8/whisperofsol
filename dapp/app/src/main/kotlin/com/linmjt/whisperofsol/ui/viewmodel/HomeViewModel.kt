@@ -3,6 +3,7 @@ package com.linmjt.whisperofsol.ui.viewmodel
 import android.app.Application
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.linmjt.whisperofsol.crypto.EncryptionResult
 import com.linmjt.whisperofsol.crypto.WhisperCrypto
@@ -40,7 +41,30 @@ import java.nio.charset.StandardCharsets
  *
  * The ViewModel itself never holds a reference to the Activity (which would leak).
  */
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
+class HomeViewModel(
+    application: Application,
+    private val savedStateHandle: SavedStateHandle,
+) : AndroidViewModel(application) {
+
+    // v3.0.11: SavedStateHandle wiring for post-send success state. MWA
+    // (Phantom/Solflare) launches a separate activity on top of ours; on
+    // return the framework can recreate our activity (config change,
+    // memory pressure, or process death). Without persistence, the
+    // success state (`lastSentNonce` etc.) is lost and the user lands on
+    // the empty send form instead of SendCompletePanel.
+    //
+    // We persist only the post-send "result" fields, not transient state
+    // like `isSending` or `pendingNonce` (those should NOT survive a
+    // process death — if the process died mid-send, the user should see
+    // a fresh send form, not a stuck "sending" indicator).
+    private val savedLastSentNonce: Long?
+        get() = savedStateHandle.get<Long>(KEY_LAST_SENT_NONCE)
+    private val savedLastSentSender: String?
+        get() = savedStateHandle.get<String>(KEY_LAST_SENT_SENDER)
+    private val savedLastSentRecipient: String?
+        get() = savedStateHandle.get<String>(KEY_LAST_SENT_RECIPIENT)
+    private val savedLastTxSignature: String?
+        get() = savedStateHandle.get<String>(KEY_LAST_TX_SIGNATURE)
 
     private val _uiState = MutableStateFlow(
         HomeUiState(
@@ -50,6 +74,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             jackpotLamports = readDebugConnectedFlag().let { if (it) 4_500_000_000L else null },
             expectedValue = readDebugConnectedFlag().let { if (it) 1_410_000L else null },
             treasuryStatus = readDebugTreasuryStatus(),
+            // v3.0.11: hydrate from SavedStateHandle so post-send success
+            // state survives activity recreation. Only apply if a
+            // signature is present (otherwise the persisted state was
+            // from a half-finished send).
+            lastSentNonce = savedLastSentNonce,
+            lastSentSender = savedLastSentSender,
+            lastSentRecipient = savedLastSentRecipient,
+            lastTxSignature = savedLastTxSignature,
         )
     )
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -1668,6 +1700,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             pendingRecipient = null,
             error = null,
         )
+        // v3.0.11: also clear the persisted state so a subsequent
+        // activity recreation doesn't re-hydrate a stale success view.
+        savedStateHandle.remove<Long>(KEY_LAST_SENT_NONCE)
+        savedStateHandle.remove<String>(KEY_LAST_SENT_SENDER)
+        savedStateHandle.remove<String>(KEY_LAST_SENT_RECIPIENT)
+        savedStateHandle.remove<String>(KEY_LAST_TX_SIGNATURE)
         clearRetryState()
     }
 
@@ -1710,6 +1748,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         sendRetryAttempt = 0,
                         lastSendRetryError = null,
                     )
+                    // v3.0.11: persist success state to SavedStateHandle so
+                    // it survives activity recreation. Without this, the
+                    // user lands on the empty send form (because the new
+                    // ViewModel has lastSentNonce = null) instead of the
+                    // SendCompletePanel with the share-code.
+                    savedStateHandle[KEY_LAST_SENT_NONCE] = _uiState.value.lastSentNonce
+                    savedStateHandle[KEY_LAST_SENT_SENDER] = senderBase58
+                    savedStateHandle[KEY_LAST_SENT_RECIPIENT] = _uiState.value.lastSentRecipient
+                    savedStateHandle[KEY_LAST_TX_SIGNATURE] = signature
                     // v3.0.8: bump useCount + lastUsedAt for the recipient
                     // so "Frequent" / "Recent" sort orders reflect this send.
                     _uiState.value.lastSentRecipient?.let { addr ->
@@ -1980,6 +2027,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     companion object {
+        // v3.0.11: SavedStateHandle keys for post-send success state.
+        // Kept private so callers must go through the typed accessors
+        // above (which also handle null-removal on clear).
+        private const val KEY_LAST_SENT_NONCE = "lastSentNonce"
+        private const val KEY_LAST_SENT_SENDER = "lastSentSender"
+        private const val KEY_LAST_SENT_RECIPIENT = "lastSentRecipient"
+        private const val KEY_LAST_TX_SIGNATURE = "lastTxSignature"
         private const val TAG = "HomeViewModel"
         private const val MAX_TREASURY_RETRIES = 3
         // v1.1.8: Send retry budget for blockhash-expired / timeout failures.
