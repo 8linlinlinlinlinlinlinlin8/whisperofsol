@@ -23,9 +23,11 @@ sealed class Route(val route: String, val title: String) {
     data object Rules         : Route("rules",         "Lottery Rules")
     // v3.0.0: Settings screen (language switcher + about)
     data object Settings      : Route("settings",      "Settings")
+    // v3.0.7: Address Book (local-only quick-pick list for Send screen)
+    data object AddressBook   : Route("addressbook",   "Address Book")
 
     companion object {
-        val all = listOf(Wallet, Main, SendWhisper, Inbox, Rules, Settings)
+        val all = listOf(Wallet, Main, SendWhisper, Inbox, Rules, Settings, AddressBook)
     }
 }
 

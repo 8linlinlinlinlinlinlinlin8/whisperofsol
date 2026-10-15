@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.Icon
@@ -71,6 +72,7 @@ import java.util.Locale
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
+    onNavigateAddressBook: () -> Unit = {},
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ChristmasBackground(modifier = Modifier.fillMaxSize()) {
@@ -108,6 +110,9 @@ fun SettingsScreen(
 
                 // Language section
                 item { LanguageSection() }
+
+                // Address Book section (v3.0.7)
+                item { AddressBookSection(onClick = onNavigateAddressBook) }
 
                 // About section
                 item { AboutSection() }
@@ -262,6 +267,53 @@ private fun AboutSection() {
                 text = stringResource(R.string.settings_program_id_value),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * AddressBookSection (v3.0.7) — clickable card linking to the full
+ * AddressBookScreen where users can view, edit, and delete locally
+ * saved recipient addresses.
+ */
+@Composable
+private fun AddressBookSection(onClick: () -> Unit) {
+    GlowCard(modifier = Modifier.fillMaxWidth(), cornerRadius = 24.dp) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconBadge(icon = Icons.Filled.Book, color = Gold500)
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.addressbook_section_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.addressbook_section_description),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .size(20.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .padding(4.dp),
             )
         }
     }

@@ -1,5 +1,7 @@
 package com.linmjt.whisperofsol.ui.screens
 
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+
 import com.linmjt.whisperofsol.ui.viewmodel.RecipientLookupStatus
 import androidx.compose.ui.res.stringResource
 import com.linmjt.whisperofsol.R
@@ -31,6 +33,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.QrCode
@@ -39,6 +42,8 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -64,6 +69,8 @@ import com.linmjt.whisperofsol.ui.components.GradientButton
 import com.linmjt.whisperofsol.ui.components.GlowCard
 import com.linmjt.whisperofsol.ui.components.IconBadge
 import com.linmjt.whisperofsol.ui.components.SecondaryButton
+import com.linmjt.whisperofsol.ui.AddressBookPrefs
+import androidx.compose.runtime.LaunchedEffect
 import com.linmjt.whisperofsol.ui.theme.GlowGold
 import com.linmjt.whisperofsol.ui.theme.Gold100
 import com.linmjt.whisperofsol.ui.theme.Gold300
@@ -89,6 +96,7 @@ import com.linmjt.whisperofsol.ui.uiErrorMessage
  *   6. Treasury status chip (Stage 1.5: replaces raw "Failed to fetch treasury: null")
  *   7. Send / Cancel buttons (Stage 1.5: disabled unless treasury is Loaded)
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SendWhisperScreen(
     uiState: com.linmjt.whisperofsol.ui.viewmodel.HomeUiState,
@@ -296,6 +304,84 @@ fun SendWhisperScreen(
             // the recipient's enc_pub via the on-chain WhisperId PDA keyed
             // by their wallet address. Manual input was user-hostile
             // (forced Telegram / SMS Whisper ID share).
+
+            // v3.0.7: Address book quick-pick — show up to 3 most recent
+            // saved addresses as FilterChips. Tap a chip to autofill the
+            // recipient field. Hidden when the book is empty.
+            var bookEntries by remember { mutableStateOf(AddressBookPrefs.getAll(context)) }
+            var showSaveDialog by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) { bookEntries = AddressBookPrefs.getAll(context) }
+            if (bookEntries.isNotEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = stringResource(R.string.addressbook_quick_pick_label),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    androidx.compose.foundation.layout.FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        bookEntries.take(3).forEach { entry ->
+                            FilterChip(
+                                selected = recipient == entry.address,
+                                onClick = { recipient = entry.address },
+                                label = { Text(entry.displayLabel()) },
+                                colors = FilterChipDefaults.filterChipColors(),
+                            )
+                        }
+                    }
+                }
+            }
+
+            // v3.0.7: Save-to-address-book button. Only shows when the
+            // user has typed a non-blank address that isn't already in
+            // the book. One tap to save (default nickname empty).
+            if (recipient.isNotBlank() && !AddressBookPrefs.contains(context, recipient)) {
+                SecondaryButton(
+                    text = stringResource(R.string.addressbook_save_button),
+                    onClick = { showSaveDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
+            if (showSaveDialog) {
+                androidx.compose.material3.AlertDialog(
+                    onDismissRequest = { showSaveDialog = false },
+                    title = { Text(stringResource(R.string.addressbook_save_dialog_title)) },
+                    text = {
+                        var nick by remember { mutableStateOf("") }
+                        androidx.compose.material3.OutlinedTextField(
+                            value = nick,
+                            onValueChange = { if (it.length <= 40) nick = it },
+                            label = { Text(stringResource(R.string.addressbook_nickname_label)) },
+                            placeholder = { Text(stringResource(R.string.addressbook_nickname_hint)) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    },
+                    confirmButton = {
+                        androidx.compose.material3.TextButton(onClick = {
+                            AddressBookPrefs.add(context, recipient, "")
+                            bookEntries = AddressBookPrefs.getAll(context)
+                            showSaveDialog = false
+                            android.widget.Toast.makeText(
+                                context,
+                                context.getString(R.string.addressbook_added),
+                                android.widget.Toast.LENGTH_SHORT,
+                            ).show()
+                        }) {
+                            Text(stringResource(R.string.addressbook_save_action))
+                        }
+                    },
+                    dismissButton = {
+                        androidx.compose.material3.TextButton(onClick = { showSaveDialog = false }) {
+                            Text(stringResource(R.string.addressbook_cancel))
+                        }
+                    },
+                )
+            }
 
             // ─── Message ─────────────────────────────────────────────
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

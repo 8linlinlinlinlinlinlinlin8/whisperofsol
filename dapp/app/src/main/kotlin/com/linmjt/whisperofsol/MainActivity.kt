@@ -32,6 +32,7 @@ import com.linmjt.whisperofsol.ui.screens.RulesScreen
 import com.linmjt.whisperofsol.ui.screens.SendWhisperScreen
 import com.linmjt.whisperofsol.ui.screens.SettingsScreen
 import com.linmjt.whisperofsol.ui.screens.WalletScreen
+import com.linmjt.whisperofsol.ui.screens.AddressBookScreen
 import com.linmjt.whisperofsol.ui.theme.WhisperOfSolTheme
 import com.linmjt.whisperofsol.ui.navigation.Route
 import com.linmjt.whisperofsol.ui.navigation.rememberAppRouter
@@ -168,6 +169,7 @@ fun WhisperOfSolApp(
                 "inbox" -> Route.Inbox
                 "rules" -> Route.Rules
                 "settings" -> Route.Settings
+                "addressbook" -> Route.AddressBook
                 else    -> Route.Wallet
             }
         } else {
@@ -341,6 +343,10 @@ fun WhisperOfSolApp(
                 // v3.0.0: Settings screen (language switcher + about).
                 Route.Settings -> SettingsScreen(
                     onBack = { router.navigate(Route.Main) },
+                    onNavigateAddressBook = { router.navigate(Route.AddressBook) },
+                )
+                Route.AddressBook -> AddressBookScreen(
+                    onBack = { router.navigate(Route.Settings) },
                 )
             }
         }

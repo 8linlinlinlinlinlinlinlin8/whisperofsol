@@ -12,7 +12,7 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 104
+        versionCode = 105
         // v1.9.0: Clean devnet reset, full SOP validation.
         //   old: Dv1UzYXq... (v1.8.33, closed 2026-10-08 via SOP Step 1)
         //   old treasury: DAmnstxv... (was)
@@ -45,7 +45,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.6"
+        versionName = "3.0.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

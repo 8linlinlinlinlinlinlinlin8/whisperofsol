@@ -264,4 +264,49 @@
     <string name="setup_error_malformed_state">簽名格式錯誤。請點擊重試。</string>
     <string name="setup_error_no_sign_state">錢包未簽署。請點擊重試。</string>
 
+<!-- Address book (v3.0.7) -->
+
+    <string name="addressbook_title">Address Book</string>
+
+    <string name="addressbook_section_title">Address Book</string>
+
+    <string name="addressbook_section_description">Locally saved Solana addresses for quick re-sending. Wiped on app data clear.</string>
+
+    <string name="addressbook_empty_title">No addresses yet</string>
+
+    <string name="addressbook_empty_description">Save an address from the Send Whisper screen to quickly message friends later.</string>
+
+    <string name="addressbook_quick_pick_label">Quick pick</string>
+
+    <string name="addressbook_save_button">Save to address book</string>
+
+    <string name="addressbook_save_dialog_title">Save to address book</string>
+
+    <string name="addressbook_nickname_label">Nickname (optional)</string>
+
+    <string name="addressbook_nickname_hint">e.g. Alice</string>
+
+    <string name="addressbook_save_action">Save</string>
+
+    <string name="addressbook_cancel">Cancel</string>
+
+    <string name="addressbook_delete">Delete</string>
+
+    <string name="addressbook_edit">Edit</string>
+
+    <string name="addressbook_use">Use this address</string>
+
+    <string name="addressbook_use_and_back">Use \&amp; go back</string>
+
+    <string name="addressbook_added">Saved to address book</string>
+
+    <string name="addressbook_exists">This address is already in your book</string>
+
+    <string name="addressbook_invalid_address">Please enter a valid Solana address first</string>
+
+    <string name="addressbook_count_format">%1$d address(es) saved</string>
+
+    <string name="addressbook_address_label">Address</string>
+
+
 </resources>
