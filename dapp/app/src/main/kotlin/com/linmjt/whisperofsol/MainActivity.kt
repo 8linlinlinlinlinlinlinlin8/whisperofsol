@@ -158,12 +158,20 @@ fun WhisperOfSolApp(
     androidx.compose.runtime.LaunchedEffect(Unit) {
         viewModel.ensureWhisperKey()
     }
-    // Stage 1.5: debug builds can override start route via system property
+    // v3.0.7 fix: Debug builds can override the start route for testing
+    // via Intent extras only — system properties are no longer trusted.
+    // System properties (`adb shell setprop debug.app.start_route X`)
+    // persist across app restarts, which means a test session could
+    // permanently hijack the start screen even for the developer.
+    // Intent extras don't persist, so the route defaults back to Wallet
+    // on the next normal launch.
+    //
+    // Usage:
+    //   adb shell am start -n com.linmjt.whisperofsol.debug/com.linmjt.whisperofsol.MainActivity \
+    //       --es debug.app.start_route send
     val startRoute = remember {
         if (com.linmjt.whisperofsol.BuildConfig.DEBUG) {
-            val sysClass = Class.forName("android.os.SystemProperties")
-            val getMethod = sysClass.getMethod("get", String::class.java, String::class.java)
-            when (getMethod.invoke(null, "debug.app.start_route", "wallet") as? String) {
+            when (activity.intent?.getStringExtra("debug.app.start_route")) {
                 "main"  -> Route.Main
                 "send"  -> Route.SendWhisper
                 "inbox" -> Route.Inbox
