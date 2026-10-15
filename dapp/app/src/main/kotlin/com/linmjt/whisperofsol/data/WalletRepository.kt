@@ -8,6 +8,7 @@ import com.solana.mobilewalletadapter.clientlib.TransactionParams
 import com.solana.mobilewalletadapter.clientlib.TransactionResult
 import com.solana.mobilewalletadapter.common.util.Base58
 import com.linmjt.whisperofsol.util.Logger
+import com.linmjt.whisperofsol.util.SeedVaultOnlySender
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -139,6 +140,11 @@ class WalletRepository(
         val repo = this
         return withContext(Dispatchers.Main) {
             try {
+                // v3.0.21: Restrict to Seed Vault only. Throws on failure —
+                // no silent chooser fallback. The UI layer surfaces lastError
+                // to the user as a clear "Seeker only" message.
+                SeedVaultOnlySender.wrap(sender)
+
                 // v1.8.18: REVERT v1.1.7's 600_000 (10 min) → 90_000 (90s).
                 //
                 // Root cause per user feedback 2026-10-07 17:33 + reference
@@ -210,6 +216,16 @@ class WalletRepository(
                         null
                     }
                 }
+            } catch (e: SeedVaultOnlySender.SeedVaultNotInstalledException) {
+                Logger.e(TAG, "Seed Vault not installed — Seeker-only", e)
+                repo.lastError = e.message
+                repo.connectSender = null
+                null
+            } catch (e: SeedVaultOnlySender.ReflectionFailedException) {
+                Logger.e(TAG, "Failed to wrap ActivityResultSender", e)
+                repo.lastError = e.message
+                repo.connectSender = null
+                null
             } catch (e: Exception) {
                 Logger.e(TAG, "Connect exception", e)
                 repo.lastError = e.message
