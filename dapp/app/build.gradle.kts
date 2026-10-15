@@ -12,7 +12,14 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 110
+        versionCode = 111
+        // v3.0.12: Tapping "Not now" or "Save" on the post-send dialog
+        //   was kicking the user back to the empty send form (user
+        //   feedback 2026-10-13). The dialog callbacks were calling
+        //   viewModel.clearLastSent() which reset lastSentNonce to null,
+        //   so SendCompletePanel disappeared. Now the dialog only resets
+        //   its own local state; the success state is only cleared on
+        //   explicit navigation (Continue → Inbox, onBack, onSendAnother).
         // v3.0.11: Post-send success state was lost on activity recreation.
         //   After MWA returns, the framework can recreate the activity
         //   (config change, memory pressure, or process death). Without
@@ -69,7 +76,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.11"
+        versionName = "3.0.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

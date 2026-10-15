@@ -327,7 +327,15 @@ fun WhisperOfSolApp(
                         viewModel.clearLastSent()
                         router.navigate(Route.Main)
                     },
-                    onSent = { router.navigate(Route.Inbox) },
+                    onSent = {
+                        // v3.0.12: clearLastSent on Continue (→ Inbox)
+                        // so the user doesn't re-see SendCompletePanel if
+                        // they navigate back to Send later. The post-send
+                        // dialog no longer clears state — that happens
+                        // here on explicit user navigation instead.
+                        viewModel.clearLastSent()
+                        router.navigate(Route.Inbox)
+                    },
                     onSendAnother = {
                         viewModel.clearLastSent()
                     },
@@ -375,8 +383,15 @@ fun WhisperOfSolApp(
         //
         // Triggered by `uiState.lastSentRecipient` becoming non-null on a
         // successful send (set in HomeViewModel.onSignAndSendResult).
-        // Dismiss / save both call `clearLastSent` so subsequent navigation
-        // doesn't re-trigger.
+        //
+        // v3.0.12: do NOT call `viewModel.clearLastSent()` in the dialog
+        // callbacks. Previously, tapping "Not now" or "Save" cleared the
+        // success state immediately, so the user was kicked off
+        // SendCompletePanel back to the empty send form (user feedback
+        // 2026-10-13). The success state is now only cleared when the
+        // user explicitly navigates away: Continue (→ Inbox),
+        // onSendAnother, onBack. The dialog only resets its own local
+        // `postSendRecipient` state so the dialog closes.
         var postSendRecipient by remember { mutableStateOf<String?>(null) }
         // Debug-only synthetic trigger (v3.0.8.1): exercises the dialog
         // without going through the full send flow. On a Seeker device
@@ -407,16 +422,19 @@ fun WhisperOfSolApp(
             PostSendDialog(
                 recipientAddress = addr,
                 onDismiss = {
-                    // "Not now" — no save, just close + clear the trigger.
+                    // "Not now" — no save, just close the dialog. Do NOT
+                    // clearLastSent here; the user should still see
+                    // SendCompletePanel with the share code after the
+                    // dialog closes (user feedback 2026-10-13: tapping
+                    // "Not now" was kicking them back to the send form).
                     postSendRecipient = null
-                    viewModel.clearLastSent()
                 },
                 onSave = { nickname ->
-                    // "Save" — write to prefs (empty nickname ok; user can
-                    // rename later from the Manage sheet).
+                    // "Save" — write to prefs. Same as above: do NOT
+                    // clearLastSent; only the dialog's local state resets
+                    // so the dialog closes. SendCompletePanel stays up.
                     AddressBookPrefs.add(activity, addr, nickname)
                     postSendRecipient = null
-                    viewModel.clearLastSent()
                 },
             )
         }
