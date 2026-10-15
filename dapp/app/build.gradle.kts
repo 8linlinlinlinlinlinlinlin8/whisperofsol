@@ -12,7 +12,7 @@ android {
         applicationId = "com.linmjt.whisperofsol"
         minSdk = 24
         targetSdk = 37
-        versionCode = 114
+        versionCode = 115
         // v3.0.15: pre-flight inbox-full check.
         //   - WhisperService.checkRecipientInboxSpace() reads the recipient's
         //     Inbox PDA (1 RPC) and counts unclaimed slots. If all 8 are
@@ -108,7 +108,7 @@ android {
         //   No recreate, no createConfigurationContext, no
         //   CompositionLocalProvider — simplest possible in-place locale
         //   switch that doesn't break Compose.
-        versionName = "3.0.15"
+        versionName = "3.0.16"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

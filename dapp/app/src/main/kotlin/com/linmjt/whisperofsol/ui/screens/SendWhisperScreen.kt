@@ -14,6 +14,7 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.PrivacyTip
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
@@ -211,33 +213,50 @@ fun SendWhisperScreen(
             }
 
             // ─── Hero illustration ───────────────────────────────────
-            GlowCard(
-                modifier = Modifier.fillMaxWidth(),
-                cornerRadius = 24.dp,
-                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            // v3.0.16: cyberpunk glass — translucent surface + gold glow border + Shield vector icon (no emoji).
+            // Text 不變: "Your message is sealed" / "Only the recipient can read it."
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = 6.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        ambientColor = MaterialTheme.colorScheme.tertiary,
+                        spotColor = MaterialTheme.colorScheme.tertiary,
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),
+                        shape = RoundedCornerShape(20.dp),
+                    )
+                    .border(
+                        width = 1.2.dp,
+                        color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.85f),
+                        shape = RoundedCornerShape(20.dp),
+                    )
+                    .padding(16.dp),
             ) {
                 Row(
-                    modifier = Modifier.padding(20.dp).fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     IconBadge(
-                        icon = Icons.AutoMirrored.Filled.Send,
-                        color = MaterialTheme.colorScheme.primary,
-                        size = 56.dp,
-                        iconSize = 28.dp,
+                        icon = Icons.Outlined.Shield,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        size = 40.dp,
+                        iconSize = 22.dp,
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.width(14.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "Your message is sealed",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
                             text = "Only the recipient can read it.",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
