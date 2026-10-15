@@ -64,6 +64,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -213,8 +214,8 @@ fun SendWhisperScreen(
             }
 
             // ─── Hero illustration ───────────────────────────────────
-            // v3.0.17: cyberpunk double-frame border (1.0dp gold outer + 0.5dp gold 60% inner, 2dp gap).
-            // v3.0.17: typography — titleSmall (14sp SemiBold) + bodySmall (12sp).
+            // v3.0.18: cyberpunk gradient border (gold → tertiaryContainer → gold, 1.0dp, diagonal).
+            // v3.0.17 typography kept — titleSmall (14sp SemiBold) + bodySmall (12sp).
             // Text 不變: "Your message is sealed" / "Only the recipient can read it."
             Box(
                 modifier = Modifier
@@ -231,14 +232,14 @@ fun SendWhisperScreen(
                     )
                     .border(
                         width = 1.0.dp,
-                        color = MaterialTheme.colorScheme.tertiary,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.tertiary,
+                                MaterialTheme.colorScheme.tertiaryContainer,
+                                MaterialTheme.colorScheme.tertiary,
+                            ),
+                        ),
                         shape = RoundedCornerShape(20.dp),
-                    )
-                    .padding(2.dp)
-                    .border(
-                        width = 0.5.dp,
-                        color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.55f),
-                        shape = RoundedCornerShape(18.dp),
                     )
                     .padding(16.dp),
             ) {
